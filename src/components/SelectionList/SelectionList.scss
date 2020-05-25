@@ -1,0 +1,13 @@
+@import '../../utils/variables.scss';
+
+.selection-list {
+  height: 35px;
+  background-color: $main-color;
+  color: white;
+  margin: auto;
+  font-weight: bold;
+  width: 150px;
+  text-align: center;
+  display: flex;
+  font-size: 16px;
+}

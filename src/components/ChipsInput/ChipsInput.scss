@@ -1,0 +1,14 @@
+.chips-input {
+  color: green;
+  padding: 10px;
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+
+    &__chip.MuiButtonBase-root {
+      width: max-content;
+      margin: 5px;
+    }
+  }
+}

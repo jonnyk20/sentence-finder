@@ -1,0 +1,22 @@
+$main-color: rgb(13, 87, 184);
+$medium-color: rgb(52, 114, 196);
+$light-color: rgb(130, 179, 243);
+$dark-color: rgb(4, 67, 150);
+$shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
+  rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
+
+@mixin content-width-max() {
+  max-width: 500px;
+
+  @media screen and (max-width: 500px) {
+    max-width: 100vw;
+  }
+}
+
+@mixin content-width-min() {
+  min-width: 500px;
+
+  @media screen and (max-width: 500px) {
+    min-width: 100vw;
+  }
+}

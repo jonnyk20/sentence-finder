@@ -1,0 +1,14 @@
+.finish-screen {
+    text-align: center;
+  
+    &__form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+  
+      &__input {
+        font-size: 16px;
+        padding: 10px;
+      }
+    }
+  }
+  

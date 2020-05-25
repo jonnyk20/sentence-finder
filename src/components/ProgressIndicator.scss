@@ -1,0 +1,9 @@
+.progress-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__bar {
+    margin-top: 10px;
+  }
+}

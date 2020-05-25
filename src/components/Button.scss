@@ -1,0 +1,23 @@
+@import '../utils/variables.scss';
+
+.button {
+  color: white;
+  background: $main-color;
+  margin: auto;
+  width: max-content;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0;
+  margin-bottom: 0;
+  border: solid 1px;
+
+  &--size-small {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 5px;
+  }
+}
