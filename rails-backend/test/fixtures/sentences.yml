@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  text: MyText
+  createdAt: MyString
+  updatedAt: MyString
+  language: MyString
+  tatoebaId: 1
+
+two:
+  text: MyText
+  createdAt: MyString
+  updatedAt: MyString
+  language: MyString
+  tatoebaId: 1
