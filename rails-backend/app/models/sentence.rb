@@ -1,11 +1,8 @@
 class Sentence < ApplicationRecord
   self.table_name = "Sentences"
 
-  has_many :sentence_translations, foreign_key: 'sentenceId', primary_key: 'tatoebaId'
-  has_many :translations, :through => :sentence_translations, foreign_key: 'sentenceId', primary_key: 'tatoebaId'
-
-  has_many :inverse_sentence_translations, class_name: 'SentenceTranslation', foreign_key: 'translationId', primary_key: 'sentenceId'
-  has_many :inverse_translations, :through => :inverse_sentence_translations, :source => :sentence, foreign_key: 'translationId', primary_key: 'tatoebaId'
+  has_many :sentence_translations, class_name: 'SentenceTranslation', foreign_key: 'sentenceId', primary_key: 'tatoebaId'
+  has_many :translations, :through => :sentence_translations
 
   # belongs :translation, class_name: 'Sentence', foreign_key: 'tatoebaId'
 
