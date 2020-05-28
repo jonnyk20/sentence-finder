@@ -4,26 +4,13 @@ class Sentence < ApplicationRecord
   has_many :sentence_translations, class_name: 'SentenceTranslation', foreign_key: 'sentenceId', primary_key: 'tatoebaId'
   has_many :translations, :through => :sentence_translations
 
-  # belongs :translation, class_name: 'Sentence', foreign_key: 'tatoebaId'
+  def get_translations(language)
 
-  # belongs_to :parent, class_name 'Member'
-  # this one worked
-  # has_many :sentence_translations, class_name: 'SentenceTranslation', foreign_key: 'sentenceId', primary_key: 'tatoebaId'
+    filtered_translations = self.translations.select {|s| s.language == language }
 
-
-  # def get_translations(language)
-  #   sentence_translations = self.sentence_translations
-
-  #   translations = sentence_translations
-  #     .map { |s_t| s_t.translation }
-
-  #   # filtered_translations = translations.select {|s| s.language == language }
-  #   print('translations?')
-  #   print(translations.count)
-
-  #   {
-  #     sentence: self,
-  #     translations: []# filtered_translations
-  #   }
-  # end
+    {
+      sentence: self,
+      translations: filtered_translations
+    }
+  end
 end
