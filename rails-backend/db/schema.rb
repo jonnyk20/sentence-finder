@@ -15,24 +15,6 @@ ActiveRecord::Schema.define(version: 2020_05_17_233333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "SentenceTranslations", id: :serial, force: :cascade do |t|
-    t.integer "sentenceId"
-    t.integer "translationId"
-    t.datetime "createdAt", null: false
-    t.datetime "updatedAt", null: false
-  end
-
-  create_table "Sentences", id: :serial, force: :cascade do |t|
-    t.integer "tatoebaId"
-    t.text "text"
-    t.string "language", limit: 255
-    t.datetime "createdAt", null: false
-    t.datetime "updatedAt", null: false
-  end
-
-  create_table "SequelizeMeta", primary_key: "name", id: :string, limit: 255, force: :cascade do |t|
-  end
-
   create_table "sentence_translations", force: :cascade do |t|
     t.string "createdAt"
     t.string "updatedAt"

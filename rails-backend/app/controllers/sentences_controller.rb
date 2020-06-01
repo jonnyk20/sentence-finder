@@ -1,6 +1,8 @@
 class SentencesController < ApplicationController
   def search
-    sentences = Sentence.where('language=:language AND (text LIKE :query)', { query: '% test %', language: 'fra' })
+    # sentences = Sentence.where('language=:language AND (text LIKE :query)', { query: '% test %', language: 'fra' })
+
+    sentences = Sentence.search('test').records.where( { language: 'fra'})
 
     res = {
       word: 'test',

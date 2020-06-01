@@ -1,6 +1,4 @@
 class SentenceTranslation < ApplicationRecord
-  self.table_name = "SentenceTranslations"
-
   belongs_to :sentence, foreign_key: 'sentenceId', primary_key: 'tatoebaId'
   belongs_to :translation, class_name: 'Sentence', foreign_key: 'translationId', primary_key: 'tatoebaId'
 

@@ -57,3 +57,6 @@ yarn-error.log*
 /code/backend/config/master.key
 
 data/*.csv
+
+
+rails-backend/vendor/bundle
