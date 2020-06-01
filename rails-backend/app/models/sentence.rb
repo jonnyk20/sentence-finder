@@ -31,10 +31,12 @@ class Sentence < ApplicationRecord
 
   def get_translations(language)
 
-    filtered_translations = self.translations.select {|s| s.language == language }
+    filtered_translations = self.translations
+      .select {|s| s.language == language }
+      .map { |s| s.text }
 
     {
-      sentence: self,
+      original: self.text,
       translations: filtered_translations
     }
   end

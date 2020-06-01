@@ -112,7 +112,6 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
         {Array.from(vocabItems.entries()).map(([word, vocabItem], i) => {
           const sentence =
             vocabItem?.sentences?.[sentenceIndices.get(word) as number];
-          console.log('sentence', sentence);
 
           const orignialSentence = sentence?.original;
           const translation = sentence?.translations[0];

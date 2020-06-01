@@ -16,6 +16,24 @@ type TranslationOptionsType = {
   words: string[];
   languageFrom: LanguageCodes;
   languageTo: LanguageCodes;
+  onUpdate: (vi: VocabItemType) => void;
+};
+
+
+const getWords = async({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
+  words.forEach(async word => {
+    try {
+      const result = await fetch(`/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`)
+      const json = await result.json();
+      const vocabItem: VocabItemType = json.vocab_item;
+      console.log('json', json)
+      console.log('vocabItem', vocabItem)
+      onUpdate(vocabItem)
+    } catch (error) {
+      
+    }
+
+  });
 };
 
 const defaultItems = new Set(['hielo', 'hormiga', 'reconocer']);
@@ -58,27 +76,37 @@ const Builder = () => {
     if (uniq(validItems).length === 0) return;
 
     event.preventDefault();
-    socket?.off('word-translated');
-    socket?.on('translation-success', (vocabItem: VocabItemType) => {
-      console.log('received', vocabItem);
-      setVocabMap((prevMap) => {
-        const newVocabMap = new Map(prevMap);
-        newVocabMap.set(vocabItem.word, vocabItem);
-        return newVocabMap;
-      });
-    });
+    // socket?.off('word-translated');
+    // socket?.on('translation-success', (vocabItem: VocabItemType) => {
+    //   console.log('received', vocabItem);
+    //   setVocabMap((prevMap) => {
+    //     const newVocabMap = new Map(prevMap);
+    //     newVocabMap.set(vocabItem.word, vocabItem);
+    //     return newVocabMap;
+    //   });
+    // });
 
     const options: TranslationOptionsType = {
       words: uniq(validItems),
       languageFrom: targetLanguage,
       languageTo: nativeLanguage,
+      onUpdate: (vi) => {
+      setVocabMap((prevMap) => {
+        const newVocabMap = new Map(prevMap);
+        newVocabMap.set(vi.word, vi);
+        return newVocabMap;
+      });
+      }
     };
+
     console.log('sending', options);
     socket?.emit(`get-sentences`, options);
 
     const newVocabMap = new Map();
     validItems.forEach((item) => newVocabMap.set(item, null));
     setVocabMap(newVocabMap);
+
+    getWords(options);
 
     setBuilderState(BuilderState.PREPARING);
   };
@@ -99,13 +127,13 @@ const Builder = () => {
   };
 
   useEffect(() => {
-    const socket = socketIOClient();
+    // const socket = socketIOClient();
 
-    setSocket(socket);
+    // setSocket(socket);
 
-    return () => {
-      socket.close();
-    };
+    // return () => {
+    //   socket.close();
+    // };
   }, []);
 
   const isInputting = builderState === BuilderState.INPUTTING;
