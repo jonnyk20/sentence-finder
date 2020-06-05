@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import socketIOClient from 'socket.io-client';
 import { uniq } from 'ramda';
 import { isNotNilOrEmpty } from '../utils/utils';
-import sampleTranslations from '../utils/sampleTranslations';
 import Button from '../components/Button';
 import { BuilderState } from '../constants/states';
 import { LanguageCodes, VocabItemType } from '../constants/translationTypes';
@@ -19,20 +17,20 @@ type TranslationOptionsType = {
   onUpdate: (vi: VocabItemType) => void;
 };
 
+const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
+
 
 const getWords = async({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
   words.forEach(async word => {
     try {
-      const result = await fetch(`/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`)
+      const result = await fetch(`${BASE_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`)
       const json = await result.json();
       const vocabItem: VocabItemType = json.vocab_item;
       console.log('json', json)
       console.log('vocabItem', vocabItem)
       onUpdate(vocabItem)
     } catch (error) {
-      
     }
-
   });
 };
 
