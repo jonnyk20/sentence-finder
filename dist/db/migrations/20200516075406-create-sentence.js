@@ -1,0 +1,33 @@
+'use strict';
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.createTable('Sentences', {
+            id: {
+                allowNull: false,
+                autoIncrement: true,
+                primaryKey: true,
+                type: Sequelize.INTEGER,
+            },
+            tatoebaId: {
+                type: Sequelize.INTEGER,
+            },
+            text: {
+                type: Sequelize.TEXT,
+            },
+            language: {
+                type: Sequelize.STRING,
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE,
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE,
+            },
+        });
+    },
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.dropTable('Sentences');
+    },
+};
