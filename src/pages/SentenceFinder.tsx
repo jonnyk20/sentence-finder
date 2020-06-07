@@ -19,7 +19,6 @@ type TranslationOptionsType = {
 
 const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
 
-
 const getWords = async({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
   words.forEach(async word => {
     try {
@@ -56,7 +55,6 @@ const Builder = () => {
   const [vocabMap, setVocabMap] = useState<Map<string, VocabItemType | null>>(
     new Map()
   );
-  const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
   const [nativeLanguage, setNativeLanguage] = useState<LanguageCodes>(
     LanguageCodes.EN
   );
@@ -74,15 +72,6 @@ const Builder = () => {
     if (uniq(validItems).length === 0) return;
 
     event.preventDefault();
-    // socket?.off('word-translated');
-    // socket?.on('translation-success', (vocabItem: VocabItemType) => {
-    //   console.log('received', vocabItem);
-    //   setVocabMap((prevMap) => {
-    //     const newVocabMap = new Map(prevMap);
-    //     newVocabMap.set(vocabItem.word, vocabItem);
-    //     return newVocabMap;
-    //   });
-    // });
 
     const options: TranslationOptionsType = {
       words: uniq(validItems),
@@ -96,9 +85,6 @@ const Builder = () => {
       });
       }
     };
-
-    console.log('sending', options);
-    socket?.emit(`get-sentences`, options);
 
     const newVocabMap = new Map();
     validItems.forEach((item) => newVocabMap.set(item, null));
@@ -125,13 +111,7 @@ const Builder = () => {
   };
 
   useEffect(() => {
-    // const socket = socketIOClient();
-
-    // setSocket(socket);
-
-    // return () => {
-    //   socket.close();
-    // };
+    fetch(BASE_URL)
   }, []);
 
   const isInputting = builderState === BuilderState.INPUTTING;
