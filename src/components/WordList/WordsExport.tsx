@@ -1,4 +1,4 @@
-import React, { useState, useRef, ReactElement } from 'react';
+import React, { useState, useRef, ReactElement, useEffect } from 'react';
 import Papa from 'papaparse';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +27,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
   sourceLang,
   translationLang,
 }): ReactElement => {
-  const [sentenceIndices, setSenctenceIndices] = useState<Map<string, number>>(
+  const [sentenceIndices, setSentenceIndices] = useState<Map<string, number>>(
     () => {
       const sentencesMap = new Map();
       [...vocabItems.keys()].forEach((key) => sentencesMap.set(key, 0));
@@ -35,6 +35,19 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
       return sentencesMap;
     }
   );
+
+  useEffect(() => {
+    setSentenceIndices((prev) => {
+      const newSentenceIndices = new Map<string, number>(prev);
+
+      [...vocabItems.keys()].forEach(key => {
+        if (!prev.has(key)) {
+          newSentenceIndices.set(key, 0)
+        }
+      })
+      return newSentenceIndices;
+    });
+  }, [vocabItems]);
 
   const ref = useRef<HTMLAnchorElement>(null);
 
@@ -79,7 +92,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     const updatedSentenceIndices = new Map(sentenceIndices);
     updatedSentenceIndices.set(word, nextIndex);
 
-    setSenctenceIndices(updatedSentenceIndices);
+    setSentenceIndices(updatedSentenceIndices);
   };
 
   return (
@@ -115,6 +128,10 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
           const orignialSentence = sentence?.original;
           const translation = sentence?.translations[0];
+          console.log('word', word)
+          console.log('sentenceIndices', sentenceIndices)
+          console.log('vocabItem', vocabItem)
+          console.log('sentence', sentence)
 
           return (
             <div key={i} className={`${BASE_CLASS}__vocab-items__item`}>

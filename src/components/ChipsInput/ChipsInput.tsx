@@ -114,22 +114,8 @@ const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
     }
   };
 
-  const chipComponents = Array.from(items).map((text, i) => {
-    return chipRenderer(
-      {
-        text,
-        isFocused: focusedChip === i && isDeleteMode,
-        handleClick: () => setFocusedChip(i),
-        handleDelete: () => handleDeleteChip(text, i),
-        className: 'text',
-      },
-      i
-    );
-  });
-
   return (
     <div className={BASE_CLASS}>
-      <div className={`${BASE_CLASS}__chips`}>{chipComponents}</div>
       <TextField
         id="standard-textarea"
         multiline
@@ -138,7 +124,7 @@ const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
         value={inputValue}
         fullWidth
         onChange={handleChange}
-        placeholder="Enter words here, separated by new lines or commas, then press enter"
+        placeholder="Enter words then press enter"
         onKeyDown={handleKeyDown}
       />
     </div>

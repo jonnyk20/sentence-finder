@@ -17,7 +17,8 @@ type TranslationOptionsType = {
   onUpdate: (vi: VocabItemType) => void;
 };
 
-const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
+// const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
+const BASE_URL = 'http://localhost:5000';
 
 const getWords = async({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
   words.forEach(async word => {
@@ -27,13 +28,15 @@ const getWords = async({ words, languageFrom, languageTo, onUpdate }: Translatio
       const vocabItem: VocabItemType = json.vocab_item;
       console.log('json', json)
       console.log('vocabItem', vocabItem)
-      onUpdate(vocabItem)
+      if (vocabItem) {
+        onUpdate(vocabItem)
+      }
     } catch (error) {
     }
   });
 };
 
-const defaultItems = new Set(['hielo', 'hormiga', 'reconocer']);
+const defaultItems = new Set<string>();
 
 type CompletedSentencesPayload = {
   url: string;
@@ -68,31 +71,58 @@ const Builder = () => {
 
   const validItems = Array.from(items).filter(isNotNilOrEmpty);
 
+  const addItems = (words: Set<string>) => {
+    if (builderState === BuilderState.INPUTTING) {
+      setBuilderState(BuilderState.PREPARING);
+    }
+
+    const wordsNotAddedYet = Array.from(words).filter(w => !vocabMap.has(w));
+
+      const options: TranslationOptionsType = {
+        words: wordsNotAddedYet,
+        languageFrom: targetLanguage,
+        languageTo: nativeLanguage,
+        onUpdate: (vi) => {
+          setVocabMap((prevMap) => {
+            const newVocabMap = new Map(prevMap);
+            newVocabMap.set(vi.word, vi);
+            return newVocabMap;
+          });
+        }
+      };
+    
+      const newVocabMap = new Map(vocabMap);
+      wordsNotAddedYet.forEach((item) => newVocabMap.set(item, null));
+      setVocabMap(newVocabMap);
+      getWords(options);
+
+  }
+
   const handleSubmit = async (event: any) => {
-    if (uniq(validItems).length === 0) return;
+    // if (uniq(validItems).length === 0) return;
 
-    event.preventDefault();
+    // event.preventDefault();
 
-    const options: TranslationOptionsType = {
-      words: uniq(validItems),
-      languageFrom: targetLanguage,
-      languageTo: nativeLanguage,
-      onUpdate: (vi) => {
-      setVocabMap((prevMap) => {
-        const newVocabMap = new Map(prevMap);
-        newVocabMap.set(vi.word, vi);
-        return newVocabMap;
-      });
-      }
-    };
+    // const options: TranslationOptionsType = {
+    //   words: uniq(validItems),
+    //   languageFrom: targetLanguage,
+    //   languageTo: nativeLanguage,
+    //   onUpdate: (vi) => {
+    //   setVocabMap((prevMap) => {
+    //     const newVocabMap = new Map(prevMap);
+    //     newVocabMap.set(vi.word, vi);
+    //     return newVocabMap;
+    //   });
+    //   }
+    // };
 
-    const newVocabMap = new Map();
-    validItems.forEach((item) => newVocabMap.set(item, null));
-    setVocabMap(newVocabMap);
+    // const newVocabMap = new Map();
+    // validItems.forEach((item) => newVocabMap.set(item, null));
+    // setVocabMap(newVocabMap);
 
-    getWords(options);
+    // getWords(options);
 
-    setBuilderState(BuilderState.PREPARING);
+    // setBuilderState(BuilderState.PREPARING);
   };
 
   const reset = () => {
@@ -123,7 +153,7 @@ const Builder = () => {
       <div>
         <h2>Sentence Finder 🌍</h2>
       </div>
-      {isInputting && (
+      {/* {isInputting && ( */}
         <>
           <div className="mb-10 text-light-color text-light">
             Automatic sentence cards for language learners
@@ -157,14 +187,13 @@ const Builder = () => {
               <div className="mr-10">
                 {`Enter ${languageOptions[targetLanguage]} words below and then click 'Find Sentences'`}
               </div>
-              <Button onClick={handleSubmit}>Find Sentences</Button>
             </div>
             <div className="sentence-finder__form__input">
-              <ChipsInput items={items} setItems={setItems} />
+              <ChipsInput items={items} setItems={addItems} />
             </div>
           </div>
         </>
-      )}
+      {/* )} */}
       {isPreparing && (
         <div>
           <WordsExport
