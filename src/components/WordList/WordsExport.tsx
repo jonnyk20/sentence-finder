@@ -1,7 +1,9 @@
 import React, { useState, useRef, ReactElement, useEffect } from 'react';
 import Papa from 'papaparse';
+import { saveAs } from 'file-saver';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import AnkiExport from 'anki-apkg-export';
 
 import {
   replaceWordWithText,
@@ -36,6 +38,8 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     }
   );
 
+  const [deck, setDeck] = useState(new AnkiExport('sentence-finder'));
+
   useEffect(() => {
     setSentenceIndices((prev) => {
       const newSentenceIndices = new Map<string, number>(prev);
@@ -52,34 +56,24 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
   const ref = useRef<HTMLAnchorElement>(null);
 
   const saveCSV = () => {
-    const data = [...vocabItems.keys()]
+    [...vocabItems.keys()]
       .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
-      .map((word) => {
+      .forEach((word) => {
         const vocabItem = vocabItems.get(word);
         const sentenceObject = vocabItem!.sentences[
           sentenceIndices.get(word) as number
         ];
-        // const sentence = replaceWordWithText(
-        //   word,
-        //   sentenceObject?.original!
-        // );
         const sentenceTranslation = sentenceObject?.translations[0]
         // # Todo, add dictionary definition
-        return {
-          word,
-          // definition,
-          sentence: sentenceObject.original,
-          sentenceTranslation,
-        };
+        // Todo: bold word and hide in 
+        deck.addCard(`${sentenceObject.original}\n${sentenceTranslation}`, word)
       });
-    var csv = Papa.unparse(data);
-    var csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    var url = window.URL.createObjectURL(csvData);
-    const a = ref.current;
-    if (a?.href) {
-      a.href = url;
-      a.click();
-    }
+
+    deck.save()
+      .then((zip: any) => {
+        saveAs(zip, 'output.apkg');
+      })
+      .catch((err: any) => console.log(err.stack || err));
   };
 
   const cycleSentence = (word: string) => {
