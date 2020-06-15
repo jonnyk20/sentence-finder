@@ -60,7 +60,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
       .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
       .forEach((word) => {
         const vocabItem = vocabItems.get(word);
-        const sentenceObject = vocabItem!.sentences[
+        const sentenceObject = vocabItem!.sentences![
           sentenceIndices.get(word) as number
         ];
         const sentenceTranslation = sentenceObject?.translations[0]
@@ -107,10 +107,13 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             <b>Word</b>
           </div>
           <div className="border-right padding-5 flex">
+           Translation
+          </div>
+          <div className="border-right padding-5 flex">
             Sentence
           </div>
           <div className="border-right padding-5 flex">
-            Translation
+            Translated
           </div>
           <div className="padding-5 flex fd-column jc-around">
             Change
@@ -122,14 +125,12 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
           const orignialSentence = sentence?.original;
           const translation = sentence?.translations[0];
-          console.log('word', word)
-          console.log('sentenceIndices', sentenceIndices)
-          console.log('vocabItem', vocabItem)
-          console.log('sentence', sentence)
+          const reading = vocabItem?.reading;
+          const definition = vocabItem?.definition
 
           return (
             <div key={i} className={`${BASE_CLASS}__vocab-items__item`}>
-              <div className="border-right padding-5 flex">{word}</div>
+              <div className="border-right padding-5 flex">{`${word}${isNotNilOrEmpty(reading) ? ` (${reading})` : ''}`}</div>
               {isNilOrEmpty(vocabItem) && (
                 <div
                   className={`${BASE_CLASS}__vocab-items__item__loading-indicator border-right padding-5 flex grid-column-3`}
@@ -140,6 +141,9 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
               {isNotNilOrEmpty(vocabItem) && (
                 <>
+                  <div className="border-right padding-5 flex">
+                    {definition}
+                  </div>
                   <div className="border-right padding-5 flex">
                     {orignialSentence}
                   </div>

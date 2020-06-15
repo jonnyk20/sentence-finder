@@ -9,6 +9,7 @@ import './SentenceFinder.scss';
 import ChipsInput from '../components/ChipsInput/ChipsInput';
 import SelectionList from '../components/SelectionList/SelectionList';
 import WordsExport from '../components/WordList/WordsExport';
+import { JishoResponseType, getJapaneseTerm } from '../utils/definitionUtils';
 
 type TranslationOptionsType = {
   words: string[];
@@ -20,7 +21,7 @@ type TranslationOptionsType = {
 // const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
 const BASE_URL = 'http://localhost:5000';
 
-const getWords = async({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
+const getExampleSentences = async ({ words, languageFrom, languageTo, onUpdate }: TranslationOptionsType) => {
   words.forEach(async word => {
     try {
       const result = await fetch(`${BASE_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`)
@@ -32,6 +33,30 @@ const getWords = async({ words, languageFrom, languageTo, onUpdate }: Translatio
         onUpdate(vocabItem)
       }
     } catch (error) {
+    }
+  });
+};
+
+// This only workds for Japanese
+const getDefinitions = async (options: TranslationOptionsType) => {
+  const { words, languageFrom, languageTo, onUpdate } = options;
+  words.forEach(async word => {
+    try {
+      const res = await fetch(`https://cors-anywhere.herokuapp.com/https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
+      const json: JishoResponseType = await res.json();
+
+      const japaneseTerm = getJapaneseTerm(json);
+
+      if (isNotNilOrEmpty(japaneseTerm)) {
+        const vocabItem: VocabItemType = {
+          word,
+          reading: japaneseTerm?.reading,
+          definition: japaneseTerm?.definitions.join(', ')
+        }
+        onUpdate(vocabItem)
+      }
+    } catch (error) {
+      
     }
   });
 };
@@ -69,8 +94,6 @@ const Builder = () => {
     BuilderState.INPUTTING
   );
 
-  const validItems = Array.from(items).filter(isNotNilOrEmpty);
-
   const addItems = (words: Set<string>) => {
     if (builderState === BuilderState.INPUTTING) {
       setBuilderState(BuilderState.PREPARING);
@@ -85,7 +108,12 @@ const Builder = () => {
         onUpdate: (vi) => {
           setVocabMap((prevMap) => {
             const newVocabMap = new Map(prevMap);
-            newVocabMap.set(vi.word, vi);
+            const existingVI = prevMap.get(vi.word) || {};
+            const newOrUpdatedVI: VocabItemType = {
+              ...existingVI,
+              ...vi
+            }
+            newVocabMap.set(vi.word, newOrUpdatedVI);
             return newVocabMap;
           });
         }
@@ -94,36 +122,9 @@ const Builder = () => {
       const newVocabMap = new Map(vocabMap);
       wordsNotAddedYet.forEach((item) => newVocabMap.set(item, null));
       setVocabMap(newVocabMap);
-      getWords(options);
-
+      getDefinitions(options);
+      getExampleSentences(options);
   }
-
-  const handleSubmit = async (event: any) => {
-    // if (uniq(validItems).length === 0) return;
-
-    // event.preventDefault();
-
-    // const options: TranslationOptionsType = {
-    //   words: uniq(validItems),
-    //   languageFrom: targetLanguage,
-    //   languageTo: nativeLanguage,
-    //   onUpdate: (vi) => {
-    //   setVocabMap((prevMap) => {
-    //     const newVocabMap = new Map(prevMap);
-    //     newVocabMap.set(vi.word, vi);
-    //     return newVocabMap;
-    //   });
-    //   }
-    // };
-
-    // const newVocabMap = new Map();
-    // validItems.forEach((item) => newVocabMap.set(item, null));
-    // setVocabMap(newVocabMap);
-
-    // getWords(options);
-
-    // setBuilderState(BuilderState.PREPARING);
-  };
 
   const reset = () => {
     setItems(defaultItems);
@@ -141,7 +142,7 @@ const Builder = () => {
   };
 
   useEffect(() => {
-    fetch(BASE_URL)
+    // fetch(BASE_URL)
   }, []);
 
   const isInputting = builderState === BuilderState.INPUTTING;

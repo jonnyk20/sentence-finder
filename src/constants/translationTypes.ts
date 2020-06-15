@@ -12,7 +12,9 @@ export type SentenceExampleType = {
 
 export type VocabItemType = {
   word: string;
-  sentences: SentenceExampleType[];
+  sentences?: SentenceExampleType[];
+  reading?: string;
+  definition?: string;
 };
 
 /*
