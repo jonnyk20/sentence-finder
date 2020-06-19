@@ -31,6 +31,10 @@ export type JishoResponseType = {
     data: Array<JishoTermType>;
 }
 
+export type LingueeResponseType = {
+    translations: Array<string>;
+}
+
 export type JapaneseTermType = {
     reading: string;
     definitions: Array<string>;

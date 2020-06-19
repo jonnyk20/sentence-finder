@@ -38,8 +38,6 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     }
   );
 
-  const [deck, setDeck] = useState(new AnkiExport('sentence-finder'));
-
   useEffect(() => {
     setSentenceIndices((prev) => {
       const newSentenceIndices = new Map<string, number>(prev);
@@ -55,7 +53,8 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const saveCSV = () => {
+  const saveAnki = () => {
+    const deck = new AnkiExport('sentence-finder');
     [...vocabItems.keys()]
       .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
       .forEach((word) => {
@@ -64,16 +63,48 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           sentenceIndices.get(word) as number
         ];
         const sentenceTranslation = sentenceObject?.translations[0]
+        const definition = vocabItem?.definition
         // # Todo, add dictionary definition
         // Todo: bold word and hide in 
-        deck.addCard(`${sentenceObject.original}\n${sentenceTranslation}`, word)
+        deck.addCard(`${replaceWordWithText(word, sentenceObject.original)}<br />${sentenceTranslation}${isNotNilOrEmpty(definition) ? `<br />(${definition})` : ''}`, word)
       });
 
     deck.save()
       .then((zip: any) => {
-        saveAs(zip, 'output.apkg');
+        saveAs(zip, 'sentence-finder.apkg');
       })
       .catch((err: any) => console.log(err.stack || err));
+  };
+
+  const saveCSV = () => {
+    const data = [...vocabItems.keys()]
+      .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
+      .map((word) => {
+        const vocabItem = vocabItems.get(word);
+        const sentenceObject = vocabItem!.sentences![
+          sentenceIndices.get(word) as number
+        ];
+        // const sentence = replaceWordWithText(
+        //   word,
+        //   sentenceObject?.original!
+        // );
+        const sentenceTranslation = sentenceObject?.translations[0]
+        // # Todo, add dictionary definition
+        return {
+          word,
+          // definition,
+          sentence: sentenceObject.original,
+          sentenceTranslation,
+        };
+      });
+    var csv = Papa.unparse(data);
+    var csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = window.URL.createObjectURL(csvData);
+    const a = ref.current;
+    if (a?.href) {
+      a.href = url;
+      a.click();
+    }
   };
 
   const cycleSentence = (word: string) => {
@@ -99,7 +130,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             sentences
           </div>
         </div>
-        <Button onClick={saveCSV} size={ButtonSize.SMALL}>Save CSV</Button>
+        <Button onClick={saveAnki} size={ButtonSize.SMALL}>Save Anki Deck</Button>
       </div>
       <div className={`${BASE_CLASS}__vocab-items`}>
         <div className={`${BASE_CLASS}__vocab-items__item`}>

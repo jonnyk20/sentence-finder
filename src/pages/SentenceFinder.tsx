@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { uniq } from 'ramda';
-import { isNotNilOrEmpty } from '../utils/utils';
+import { isNotNilOrEmpty, convertToLingueeLanguageCode } from '../utils/utils';
 import Button from '../components/Button';
 import { BuilderState } from '../constants/states';
 import { LanguageCodes, VocabItemType } from '../constants/translationTypes';
@@ -9,7 +8,7 @@ import './SentenceFinder.scss';
 import ChipsInput from '../components/ChipsInput/ChipsInput';
 import SelectionList from '../components/SelectionList/SelectionList';
 import WordsExport from '../components/WordList/WordsExport';
-import { JishoResponseType, getJapaneseTerm } from '../utils/definitionUtils';
+import { JishoResponseType, getJapaneseTerm, LingueeResponseType } from '../utils/definitionUtils';
 
 type TranslationOptionsType = {
   words: string[];
@@ -38,27 +37,51 @@ const getExampleSentences = async ({ words, languageFrom, languageTo, onUpdate }
 };
 
 // This only workds for Japanese
-const getDefinitions = async (options: TranslationOptionsType) => {
+const getDefinitions = async (options: TranslationOptionsType): Promise<void> => {
   const { words, languageFrom, languageTo, onUpdate } = options;
+
+  if (options.languageFrom === LanguageCodes.JA) {
+    words.forEach(async word => {
+      try {
+        const res = await fetch(`https://cors-anywhere.herokuapp.com/https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
+        const json: JishoResponseType = await res.json();
+
+        const japaneseTerm = getJapaneseTerm(json);
+
+        if (isNotNilOrEmpty(japaneseTerm)) {
+          const vocabItem: VocabItemType = {
+            word,
+            reading: japaneseTerm?.reading,
+            definition: japaneseTerm?.definitions.join(', ')
+          }
+          onUpdate(vocabItem)
+        }
+      } catch (error) {
+        console.log('error translating:', error)
+      }
+    });
+  }
+
   words.forEach(async word => {
     try {
-      const res = await fetch(`https://cors-anywhere.herokuapp.com/https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(word)}`);
-      const json: JishoResponseType = await res.json();
+      const res = await fetch(`/api/translations?word=${encodeURIComponent(word)}&languageFrom=${encodeURIComponent(convertToLingueeLanguageCode(languageFrom))}&languageTo=${encodeURIComponent(convertToLingueeLanguageCode(languageTo))}`);
+      const json: LingueeResponseType = await res.json();
 
-      const japaneseTerm = getJapaneseTerm(json);
+      const translations = json.translations;
 
-      if (isNotNilOrEmpty(japaneseTerm)) {
+      if (isNotNilOrEmpty(translations)) {
         const vocabItem: VocabItemType = {
           word,
-          reading: japaneseTerm?.reading,
-          definition: japaneseTerm?.definitions.join(', ')
+          definition: translations?.join(', ')
         }
         onUpdate(vocabItem)
       }
     } catch (error) {
-      
+      console.log('error translating:', error)
     }
   });
+
+
 };
 
 const defaultItems = new Set<string>();
@@ -87,7 +110,7 @@ const Builder = () => {
     LanguageCodes.EN
   );
   const [targetLanguage, setTargetLanguage] = useState<LanguageCodes>(
-    LanguageCodes.SP
+    LanguageCodes.JA
   );
 
   const [builderState, setBuilderState] = useState<BuilderState>(

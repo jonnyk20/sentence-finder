@@ -5,6 +5,13 @@ export enum LanguageCodes {
   EN = 'eng',
 }
 
+export enum LingueeLanguageCodeType {
+  FR = 'fr',
+  SP = 'sp',
+  JA = 'ja',
+  EN = 'en',
+}
+
 export type SentenceExampleType = {
   original: string;
   translations: string[];

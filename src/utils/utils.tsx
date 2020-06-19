@@ -1,5 +1,6 @@
 import { isNil, isEmpty, either } from 'ramda';
 import React, { ReactElement, Fragment } from 'react';
+import { LanguageCodes, LingueeLanguageCodeType } from '../constants/translationTypes';
 
 export const isNilOrEmpty = either(isNil, isEmpty);
 
@@ -110,3 +111,19 @@ export const replaceWordWithElement = (
 
   return <span>{elements}</span>;
 };
+
+
+export const convertToLingueeLanguageCode = (code: LanguageCodes): LingueeLanguageCodeType => {
+  switch (code) {
+    case LanguageCodes.EN:
+      return LingueeLanguageCodeType.EN
+    case LanguageCodes.FR:
+      return LingueeLanguageCodeType.FR
+    case LanguageCodes.SP:
+      return LingueeLanguageCodeType.SP
+    case LanguageCodes.JA:
+      return LingueeLanguageCodeType.JA
+    default:
+      return LingueeLanguageCodeType.EN
+  }
+}
