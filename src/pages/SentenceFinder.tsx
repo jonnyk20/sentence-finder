@@ -7,7 +7,7 @@ import { LanguageCodes, VocabItemType } from '../constants/translationTypes';
 import './SentenceFinder.scss';
 import ChipsInput from '../components/ChipsInput/ChipsInput';
 import SelectionList from '../components/SelectionList/SelectionList';
-import WordsExport from '../components/WordList/WordsExport';
+import WordsExport from '../components/WordsExport/WordsExport';
 import { JishoResponseType, getJapaneseTerm, LingueeResponseType } from '../utils/definitionUtils';
 
 type TranslationOptionsType = {

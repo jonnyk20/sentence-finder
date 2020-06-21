@@ -62,3 +62,5 @@ data/*.csv
 rails-backend/vendor/bundle
 
 sandbox/
+
+/.vscode

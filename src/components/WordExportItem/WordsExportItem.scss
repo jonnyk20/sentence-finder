@@ -1,0 +1,11 @@
+.words-export-item {
+  display: grid;
+  grid-template-columns: 2fr 2fr 3fr 3fr 1fr;
+  border: solid 1px;
+  word-break: break-word;
+
+  &__loading-indicator {
+    grid-column: 2 / -1;
+    border-right: none;
+  }
+}
