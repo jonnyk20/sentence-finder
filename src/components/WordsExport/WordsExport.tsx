@@ -8,6 +8,7 @@ import "./WordsExport.scss";
 import { LanguageCodes, VocabItemType } from "../../constants/translationTypes";
 import WordsExportItem from "../WordExportItem/WordsExportItem";
 import { exportToAnkiDeck, exportToCSV } from "../../utils/exportUtils";
+import CardSettings from "../CardSettings/CardSettings";
 
 const BASE_CLASS = "words-export";
 
@@ -102,6 +103,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           />
         ))}
       </div>
+      <CardSettings />
       <a href="null" download="vocab.csv" ref={ref} style={{ display: "none" }}>
         Download
       </a>
