@@ -2,7 +2,7 @@ import AnkiExport from "anki-apkg-export";
 import Papa from "papaparse";
 import { saveAs } from "file-saver";
 
-import { isNotNilOrEmpty, replaceWordWithText } from "./utils";
+import { isNotNilOrEmpty, replaceWordWithText, isNilOrEmpty } from "./utils";
 import {
   VocabItemType,
   SentenceExampleType,
@@ -40,6 +40,8 @@ export const generateFlashcardContent = (
     string: string,
     placement: CardPlacementType
   ) => {
+    if (isNilOrEmpty(String)) return;
+
     switch (placement) {
       case CardPlacementType.FRONT:
         frontContent = `${frontContent}<br />${string}`;
@@ -88,31 +90,22 @@ export const generateFlashcardContent = (
 export const exportToAnkiDeck = (
   vocabItems: Map<string, VocabItemType | null>,
   sentenceIndices: Map<string, number>,
+  options: CardOptionsType,
   onComplete: () => void
 ) => {
   const deck = new AnkiExport("sentence-finder");
-  [...vocabItems.keys()]
-    .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
-    .forEach((word) => {
-      const vocabItem = vocabItems.get(word);
-      const sentenceObject = isNotNilOrEmpty(vocabItem?.sentences)
-        ? vocabItem?.sentences![sentenceIndices.get(word) as number]
-        : null;
-      const originalSentence = sentenceObject?.original || "";
-      const sentenceTranslation = sentenceObject?.translations[0];
-      const definition = vocabItem?.definition;
-      // # Todo, add dictionary definition
-      // Todo: bold word and hide in
-      deck.addCard(
-        `${replaceWordWithText(
-          word,
-          originalSentence
-        )}<br />${sentenceTranslation}${
-          isNotNilOrEmpty(definition) ? `<br />(${definition})` : ""
-        }`,
-        word
-      );
-    });
+  [...vocabItems.values()].filter(isNotNilOrEmpty).forEach((vocabItem) => {
+    const item = vocabItem as VocabItemType;
+    const index = sentenceIndices.get(item.word) as number;
+
+    const { frontContent, backContent } = generateFlashcardContent(
+      item,
+      index,
+      options
+    );
+
+    deck.addCard(frontContent, backContent);
+  });
 
   deck
     .save()

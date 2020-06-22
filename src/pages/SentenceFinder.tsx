@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { isNotNilOrEmpty, convertToLingueeLanguageCode } from "../utils/utils";
 import Button from "../components/Button";
 import { BuilderState } from "../constants/states";
@@ -186,12 +186,6 @@ const Builder = () => {
     setTargetLanguage(languageCode);
   };
 
-  useEffect(() => {
-    // fetch(BASE_URL)
-  }, []);
-
-  const isInputting = builderState === BuilderState.INPUTTING;
-  const isPreparing = builderState === BuilderState.PREPARING;
   const isFailed = builderState === BuilderState.FAILED;
 
   return (

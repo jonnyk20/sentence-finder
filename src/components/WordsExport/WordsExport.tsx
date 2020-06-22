@@ -7,7 +7,7 @@ import Button, { ButtonSize } from "../Button";
 import "./WordsExport.scss";
 import { LanguageCodes, VocabItemType } from "../../constants/translationTypes";
 import WordsExportItem from "../WordExportItem/WordsExportItem";
-import { exportToAnkiDeck, exportToCSV } from "../../utils/exportUtils";
+import { exportToCSV } from "../../utils/exportUtils";
 import CardSettings from "../CardSettings/CardSettings";
 
 const BASE_CLASS = "words-export";
@@ -31,6 +31,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
       return sentencesMap;
     }
   );
+  const [isExportingAnki, setIsExportingAnki] = useState(false);
 
   useEffect(() => {
     setSentenceIndices((prev) => {
@@ -47,11 +48,8 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const saveAnki = () => {
-    exportToAnkiDeck(vocabItems, sentenceIndices, () =>
-      console.log("exported")
-    );
-  };
+  const openCardSettings = () => setIsExportingAnki(true);
+  const closeCardSettings = () => setIsExportingAnki(false);
 
   const saveCSV = () => {
     exportToCSV(vocabItems, sentenceIndices, ref);
@@ -80,8 +78,11 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             sentences
           </div>
         </div>
-        <Button onClick={saveAnki} size={ButtonSize.SMALL}>
-          Save Anki Deck
+        <Button onClick={saveCSV} size={ButtonSize.SMALL}>
+          Save CSV
+        </Button>
+        <Button onClick={openCardSettings} size={ButtonSize.SMALL}>
+          Save Anki
         </Button>
       </div>
       <div className={`${BASE_CLASS}__vocab-items`}>
@@ -103,7 +104,13 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           />
         ))}
       </div>
-      <CardSettings />
+      {isExportingAnki && (
+        <CardSettings
+          vocabItems={vocabItems}
+          sentenceIndices={sentenceIndices}
+          closeCardSettings={closeCardSettings}
+        />
+      )}
       <a href="null" download="vocab.csv" ref={ref} style={{ display: "none" }}>
         Download
       </a>

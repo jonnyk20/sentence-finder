@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ReactElement } from "react";
 
 import CardPreview from "../CardPreview/CardPreview";
 import CardOption from "../CardOption/CardOption";
@@ -9,11 +9,21 @@ import {
 } from "../../constants/cardTypes";
 import { VocabItemType } from "../../constants/translationTypes";
 
+import Button from "../Button";
+import { exportToAnkiDeck } from "../../utils/exportUtils";
+import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/utils";
+
 import "./CardSettings.scss";
 
 const BASE_CLASS = "card-settings";
 
-const vocabItem: VocabItemType = {
+type PropsType = {
+  vocabItems: Map<string, VocabItemType | null>;
+  sentenceIndices: Map<string, number>;
+  closeCardSettings: () => void;
+};
+
+const sampleVocabItem: VocabItemType = {
   word: "友達",
   reading: "ともだち",
   definition: "friend, acuquaitance, buddy",
@@ -25,7 +35,11 @@ const vocabItem: VocabItemType = {
   ],
 };
 
-const CardSettings = () => {
+const CardSettings: React.SFC<PropsType> = ({
+  vocabItems,
+  sentenceIndices,
+  closeCardSettings,
+}): ReactElement => {
   const [options, setOptions] = useState<CardOptionsType>({
     [CardPropertyType.SENTENCE]: CardPlacementType.OFF,
     [CardPropertyType.CLOZE_SENTENCE]: CardPlacementType.FRONT,
@@ -34,6 +48,8 @@ const CardSettings = () => {
     [CardPropertyType.READING]: CardPlacementType.BACK,
     [CardPropertyType.DEFINITION]: CardPlacementType.FRONT,
   });
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const updateOption = (
     cardProperty: CardPropertyType,
@@ -57,9 +73,27 @@ const CardSettings = () => {
     />
   );
 
+  const firstVocabItem = [...vocabItems.values()].filter(isNotNilOrEmpty)[0];
+
+  const previewVocabItem = firstVocabItem || sampleVocabItem;
+  const sentenceIndex = isNotNilOrEmpty(firstVocabItem)
+    ? (sentenceIndices.get(firstVocabItem?.word as string) as number)
+    : 0;
+
+  const exportAnki = () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    exportToAnkiDeck(vocabItems, sentenceIndices, options, closeCardSettings);
+  };
+
   return (
     <div className={BASE_CLASS}>
-      <div className={`${BASE_CLASS}__close-button`}>x</div>
+      <div
+        className={`${BASE_CLASS}__close-button`}
+        onClick={closeCardSettings}
+      >
+        x
+      </div>
       <div className={`${BASE_CLASS}__header`}>Card Export</div>
       <div className={`${BASE_CLASS}__options-header`}>
         <div>Option</div>
@@ -72,11 +106,12 @@ const CardSettings = () => {
       </div>
       <div className={`${BASE_CLASS}__card-preview-container`}>
         <CardPreview
-          vocabItem={vocabItem}
-          sentenceIndex={0}
+          vocabItem={previewVocabItem}
+          sentenceIndex={sentenceIndex}
           options={options}
         />
       </div>
+      <Button onClick={exportAnki}>Save Anki Cards</Button>
     </div>
   );
 };
