@@ -3,7 +3,87 @@ import Papa from "papaparse";
 import { saveAs } from "file-saver";
 
 import { isNotNilOrEmpty, replaceWordWithText } from "./utils";
-import { VocabItemType } from "../constants/translationTypes";
+import {
+  VocabItemType,
+  SentenceExampleType,
+} from "../constants/translationTypes";
+import {
+  CardOptionsType,
+  CardPlacementType,
+  CardPropertyType,
+} from "../constants/cardTypes";
+
+export const generateFlashcardContent = (
+  vocabItem: VocabItemType,
+  sentenceIndex: number,
+  options: CardOptionsType
+): { frontContent: string; backContent: string } => {
+  let frontContent = "";
+  let backContent = "";
+
+  const word = vocabItem?.word || "";
+  const definition = vocabItem?.definition || "";
+  const reading = vocabItem?.reading || "";
+
+  const sentence: SentenceExampleType = isNotNilOrEmpty(vocabItem?.sentences)
+    ? (vocabItem?.sentences || [])[sentenceIndex]
+    : {
+        original: "",
+        translations: [""],
+      };
+
+  const originalSentence = sentence.original;
+  const sentenceWithwordHidden = replaceWordWithText(word, originalSentence);
+  const translatedSentence = sentence.translations[0];
+
+  const addToCardByPlacement = (
+    string: string,
+    placement: CardPlacementType
+  ) => {
+    switch (placement) {
+      case CardPlacementType.FRONT:
+        frontContent = `${frontContent}<br />${string}`;
+        break;
+      case CardPlacementType.BACK:
+        backContent = `${backContent}<br />${string}`;
+        break;
+      default:
+        break;
+    }
+  };
+
+  Object.entries(options).forEach(([key, placement]) => {
+    const option = key as CardPropertyType;
+
+    switch (option) {
+      case CardPropertyType.WORD:
+        addToCardByPlacement(word, placement);
+        break;
+      case CardPropertyType.CLOZE_SENTENCE:
+        addToCardByPlacement(sentenceWithwordHidden, placement);
+        break;
+      case CardPropertyType.SENTENCE:
+        addToCardByPlacement(originalSentence, placement);
+        break;
+      case CardPropertyType.SENTENCE_TRANSLATION:
+        addToCardByPlacement(translatedSentence, placement);
+        break;
+      case CardPropertyType.DEFINITION:
+        addToCardByPlacement(definition, placement);
+        break;
+      case CardPropertyType.READING:
+        addToCardByPlacement(reading, placement);
+        break;
+      default:
+        break;
+    }
+  });
+
+  return {
+    frontContent,
+    backContent,
+  };
+};
 
 export const exportToAnkiDeck = (
   vocabItems: Map<string, VocabItemType | null>,

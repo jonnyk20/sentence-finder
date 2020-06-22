@@ -1,0 +1,15 @@
+.card-option {
+  display: grid;
+  grid-template-columns: 100px 50px 50px 50px;
+  height: 40px;
+  border-top: solid 1px white;
+
+  &__name {
+    text-align: center;
+    padding: 5px;
+  }
+
+  &__option {
+    margin: auto;
+  }
+}

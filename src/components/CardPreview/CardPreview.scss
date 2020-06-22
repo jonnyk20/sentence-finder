@@ -1,3 +1,12 @@
 .card-preview {
   color: white;
+
+  &__card {
+    height: 200px;
+    background: white;
+    color: black;
+    box-shadow: 0 1px 2px rgb(255, 255, 255);
+    padding: 10px;
+    margin-top: 10px;
+  }
 }

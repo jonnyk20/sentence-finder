@@ -261,3 +261,25 @@ const Builder = () => {
 };
 
 export default Builder;
+
+// tatoeba.org/api/search?word=amigo&language_from=es&language_to=en
+
+//  {
+//   word: 'amigo',
+//   sentences: [
+//     {
+//       original: 'Hello friend',
+//       translations: [
+//         'Hola amigo',
+//         'Buenos dias amigo'
+//       ]
+//     },
+//     {
+//       original: 'This is not my friend',
+//       translations: [
+//         'No es mi amigo',
+//         'El no es mi amgo'
+//       ]
+//     }
+//   ]
+// }

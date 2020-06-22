@@ -1,6 +1,9 @@
-import { isNil, isEmpty, either } from 'ramda';
-import React, { ReactElement, Fragment } from 'react';
-import { LanguageCodes, LingueeLanguageCodeType } from '../constants/translationTypes';
+import { isNil, isEmpty, either } from "ramda";
+import React, { ReactElement } from "react";
+import {
+  LanguageCodes,
+  LingueeLanguageCodeType,
+} from "../constants/translationTypes";
 
 export const isNilOrEmpty = either(isNil, isEmpty);
 
@@ -18,20 +21,20 @@ export const encodeQueryString = (params: any) => {
   if (!isNilOrEmpty(keys)) {
     var esc = encodeURIComponent;
     const paramsString = Object.keys(params)
-      .map((k) => esc(k) + '=' + esc(params[k]))
-      .join('&');
+      .map((k) => esc(k) + "=" + esc(params[k]))
+      .join("&");
     return `?${paramsString}`;
   }
 
-  return '';
+  return "";
 };
 
 export const parseQueryString = (s: any): any =>
   s
     .slice(1)
-    .split('&')
+    .split("&")
     .map((queryParam: string) => {
-      let pair = queryParam.split('=');
+      let pair = queryParam.split("=");
       return { key: pair[0], value: pair[1] };
     })
     .reduce((query: any, pair: any) => {
@@ -40,7 +43,7 @@ export const parseQueryString = (s: any): any =>
       return query;
     }, {});
 
-export const isDev = window.location.host.includes('localhost');
+export const isDev = window.location.host.includes("localhost");
 
 export const getRandomIndex = (length: number) =>
   Math.floor(Math.random() * length);
@@ -49,7 +52,7 @@ export const getRandomItem = (arr: Array<any>) =>
   arr[getRandomIndex(arr.length)];
 
 export const formatScore = (score: number) =>
-  String(score).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  String(score).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 export const shuffle = (a: Array<any>): Array<any> => {
   const shuffled = [...a];
@@ -67,27 +70,20 @@ export const pluralize = (
   plural: string
 ): string => (count === 1 ? singular : plural);
 
-export const replaceWordWithText = (
-  word: string,
-  text: string
-): ReactElement | string => {
-  console.log('word', word);
-  console.log('text', text);
-
-  const regex = new RegExp(`${word}([a-zA-Z]*)`, 'gmi');
-  return text.replace(regex, '____');
+export const replaceWordWithText = (word: string, text: string): string => {
+  const regex = new RegExp(`${word}([a-zA-Z]*)`, "gmi");
+  return text.replace(regex, "____");
 };
 
 export const replaceWordWithElement = (
   word: string,
   text: string
 ): ReactElement => {
-  const regex = new RegExp(`${word}([a-zA-Z]*)`, 'gmi');
+  const regex = new RegExp(`${word}([a-zA-Z]*)`, "gmi");
   const segments = text
     .split(regex)
     .filter(isNotNilOrEmpty)
     .map((word, i) => <span key={`word-${i}`}>{word}</span>);
-  console.log('segments', segments);
 
   const elements = segments.reduce(
     (acc: ReactElement[], segment: ReactElement, i) => {
@@ -96,9 +92,6 @@ export const replaceWordWithElement = (
           [---]
         </span>
       );
-
-      console.log('acc', acc);
-      console.log('segment', segment.props.children);
 
       if (i === 0) {
         return [...acc, segment];
@@ -112,18 +105,40 @@ export const replaceWordWithElement = (
   return <span>{elements}</span>;
 };
 
-
-export const convertToLingueeLanguageCode = (code: LanguageCodes): LingueeLanguageCodeType => {
+export const convertToLingueeLanguageCode = (
+  code: LanguageCodes
+): LingueeLanguageCodeType => {
   switch (code) {
     case LanguageCodes.EN:
-      return LingueeLanguageCodeType.EN
+      return LingueeLanguageCodeType.EN;
     case LanguageCodes.FR:
-      return LingueeLanguageCodeType.FR
+      return LingueeLanguageCodeType.FR;
     case LanguageCodes.SP:
-      return LingueeLanguageCodeType.SP
+      return LingueeLanguageCodeType.SP;
     case LanguageCodes.JA:
-      return LingueeLanguageCodeType.JA
+      return LingueeLanguageCodeType.JA;
     default:
-      return LingueeLanguageCodeType.EN
+      return LingueeLanguageCodeType.EN;
   }
-}
+};
+
+export const renderWithLineBreaks = (
+  str: string
+): Array<ReactElement | string> => {
+  const output: Array<ReactElement | string> = [];
+  const elements = str.split(/<br \/>/g);
+
+  elements.slice(1).forEach((el, i) => {
+    const isLast = i === el.length - 1;
+
+    if (isNotNilOrEmpty(el)) {
+      output.push(el);
+    }
+
+    if (!isLast) {
+      output.push(<br key={el} />);
+    }
+  });
+
+  return output;
+};

@@ -1,28 +1,29 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 
 import CardPreview from "../CardPreview/CardPreview";
+import CardOption from "../CardOption/CardOption";
+import {
+  CardOptionsType,
+  CardPlacementType,
+  CardPropertyType,
+} from "../../constants/cardTypes";
+import { VocabItemType } from "../../constants/translationTypes";
+
 import "./CardSettings.scss";
 
 const BASE_CLASS = "card-settings";
 
-enum CardPropertyType {
-  WORD = "word",
-  READING = "reading (Japanese)",
-  DEFINITION = "definition",
-  SENTENCE = "sentence with word showing",
-  SENTENCE_TRANSLATION = "sentence translation",
-  CLOZE_SENTENCE = "Sentence with word hidden",
-}
-
-// const enym Card = ['word', 'reading (Japanese)', 'definition', 'sentence', 'sentence translation']
-
-enum CardPlacementType {
-  FRONT = "front",
-  BACK = "back",
-  OFF = "off",
-}
-
-type CardOptionsType = { [key in CardPropertyType]: CardPlacementType };
+const vocabItem: VocabItemType = {
+  word: "友達",
+  reading: "ともだち",
+  definition: "friend, acuquaitance, buddy",
+  sentences: [
+    {
+      original: "彼は僕の友達です",
+      translations: ["This is my friend"],
+    },
+  ],
+};
 
 const CardSettings = () => {
   const [options, setOptions] = useState<CardOptionsType>({
@@ -34,54 +35,47 @@ const CardSettings = () => {
     [CardPropertyType.DEFINITION]: CardPlacementType.FRONT,
   });
 
+  const updateOption = (
+    cardProperty: CardPropertyType,
+    placement: CardPlacementType
+  ) => {
+    setOptions({
+      ...options,
+      [cardProperty]: placement,
+    });
+  };
+
   const renderOption = ([cardProperty, cardPlacement]: [
     string,
     CardPlacementType
   ]) => (
-    <div
-      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        setOptions({
-          ...options,
-          [cardProperty]: e.target.value,
-        });
-      }}
-      className="flex"
-    >
-      <div>{cardProperty}: &nbsp;</div>
-      <input
-        type="radio"
-        value={CardPlacementType.FRONT}
-        name={cardProperty}
-        checked={
-          options[cardProperty as CardPropertyType] === CardPlacementType.FRONT
-        }
-      />
-      <input
-        type="radio"
-        value={CardPlacementType.BACK}
-        name={cardProperty}
-        checked={
-          options[cardProperty as CardPropertyType] === CardPlacementType.BACK
-        }
-      />
-      <input
-        type="radio"
-        value={CardPlacementType.OFF}
-        name={cardProperty}
-        checked={
-          options[cardProperty as CardPropertyType] === CardPlacementType.OFF
-        }
-      />
-    </div>
+    <CardOption
+      key={cardProperty}
+      updateOption={updateOption}
+      cardProperty={cardProperty as CardPropertyType}
+      placement={cardPlacement}
+    />
   );
 
   return (
     <div className={BASE_CLASS}>
-      <div>x</div>
-      <div>Card Export</div>
-      <div>{Object.entries(options).map(renderOption)}</div>
-      <div>
-        <CardPreview />
+      <div className={`${BASE_CLASS}__close-button`}>x</div>
+      <div className={`${BASE_CLASS}__header`}>Card Export</div>
+      <div className={`${BASE_CLASS}__options-header`}>
+        <div>Option</div>
+        <div>Front</div>
+        <div>Back</div>
+        <div>Off</div>
+      </div>
+      <div className={`${BASE_CLASS}__options-container`}>
+        {Object.entries(options).map(renderOption)}
+      </div>
+      <div className={`${BASE_CLASS}__card-preview-container`}>
+        <CardPreview
+          vocabItem={vocabItem}
+          sentenceIndex={0}
+          options={options}
+        />
       </div>
     </div>
   );
