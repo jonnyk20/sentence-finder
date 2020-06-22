@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { isNotNilOrEmpty, convertToLingueeLanguageCode } from "../utils/utils";
 import Button from "../components/Button";
 import { BuilderState } from "../constants/states";
-import { LanguageCodes, VocabItemType } from "../constants/translationTypes";
+import {
+  LanguageCodes,
+  VocabItemType,
+  SentenceExampleType,
+} from "../constants/translationTypes";
 
-import "./SentenceFinder.scss";
 import ChipsInput from "../components/ChipsInput/ChipsInput";
 import SelectionList from "../components/SelectionList/SelectionList";
 import WordsExport from "../components/WordsExport/WordsExport";
@@ -13,6 +16,9 @@ import {
   getJapaneseTerm,
   LingueeResponseType,
 } from "../utils/definitionUtils";
+import { mockVocabItem } from "../utils/mockData";
+
+import "./SentenceFinder.scss";
 
 type TranslationOptionsType = {
   words: string[];
@@ -32,13 +38,14 @@ const getExampleSentences = async ({
 }: TranslationOptionsType) => {
   words.forEach(async (word) => {
     try {
-      const result = await fetch(
-        `${BASE_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
-      );
-      const json = await result.json();
-      const vocabItem: VocabItemType = json.vocab_item;
-      console.log("json", json);
-      console.log("vocabItem", vocabItem);
+      // const result = await fetch(
+      //   `${BASE_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
+      // );
+      // const json = await result.json();
+      // const vocabItem: VocabItemType = json.vocab_item;
+      // console.log("json", json);
+      // console.log("vocabItem", vocabItem);
+      const vocabItem = mockVocabItem;
       if (vocabItem) {
         onUpdate(vocabItem);
       }
@@ -139,10 +146,12 @@ const Builder = () => {
     BuilderState.INPUTTING
   );
 
-  const addItems = (words: Set<string>) => {
+  const addItems = (wordsss: Set<string>) => {
     if (builderState === BuilderState.INPUTTING) {
       setBuilderState(BuilderState.PREPARING);
     }
+
+    const words = ["友達"];
 
     const wordsNotAddedYet = Array.from(words).filter((w) => !vocabMap.has(w));
 
@@ -167,7 +176,7 @@ const Builder = () => {
     const newVocabMap = new Map(vocabMap);
     wordsNotAddedYet.forEach((item) => newVocabMap.set(item, null));
     setVocabMap(newVocabMap);
-    getDefinitions(options);
+    // getDefinitions(options);
     getExampleSentences(options);
   };
 
@@ -184,6 +193,21 @@ const Builder = () => {
   const onChangeTargetLanguage = (value: string) => {
     const languageCode = value as LanguageCodes;
     setTargetLanguage(languageCode);
+  };
+
+  const addSentenceToVocabItem = (
+    word: string,
+    sentence: SentenceExampleType
+  ) => {
+    const exitingVocabItem = vocabMap.get(word) as VocabItemType;
+    const updatedVocabItem: VocabItemType = {
+      ...exitingVocabItem,
+      sentences: [...exitingVocabItem.sentences, sentence],
+    };
+    const updatedVocabMap = new Map(vocabMap);
+    updatedVocabMap.set(word, updatedVocabItem);
+
+    setVocabMap(updatedVocabMap);
   };
 
   const isFailed = builderState === BuilderState.FAILED;
@@ -240,6 +264,7 @@ const Builder = () => {
           vocabItems={vocabMap}
           sourceLang={targetLanguage}
           translationLang={nativeLanguage}
+          addSentenceToVocabItem={addSentenceToVocabItem}
         />
       </div>
       {/* )} */}

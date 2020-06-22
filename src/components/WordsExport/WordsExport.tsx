@@ -5,10 +5,16 @@ import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import Button, { ButtonSize } from "../Button";
 
 import "./WordsExport.scss";
-import { LanguageCodes, VocabItemType } from "../../constants/translationTypes";
+import {
+  LanguageCodes,
+  VocabItemType,
+  SentenceExampleType,
+} from "../../constants/translationTypes";
 import WordsExportItem from "../WordExportItem/WordsExportItem";
 import { exportToCSV } from "../../utils/exportUtils";
 import CardSettings from "../CardSettings/CardSettings";
+import { isNotNilOrEmpty } from "../../utils/utils";
+import SentenceInput from "../SentenceInput/SentenceInput";
 
 const BASE_CLASS = "words-export";
 
@@ -16,12 +22,14 @@ type WordExportPropsType = {
   vocabItems: Map<string, VocabItemType | null>;
   sourceLang: LanguageCodes;
   translationLang: LanguageCodes;
+  addSentenceToVocabItem: (word: string, sentence: SentenceExampleType) => void;
 };
 
 const WordsExport: React.SFC<WordExportPropsType> = ({
   vocabItems,
   sourceLang,
   translationLang,
+  addSentenceToVocabItem,
 }): ReactElement => {
   const [sentenceIndices, setSentenceIndices] = useState<Map<string, number>>(
     () => {
@@ -32,6 +40,9 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     }
   );
   const [isExportingAnki, setIsExportingAnki] = useState(false);
+  const [sentenceCreationWord, setSentenceCreationWord] = useState("");
+
+  const isWritingSentence = isNotNilOrEmpty(sentenceCreationWord);
 
   useEffect(() => {
     setSentenceIndices((prev) => {
@@ -68,6 +79,23 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     setSentenceIndices(updatedSentenceIndices);
   };
 
+  const openSentenceInput = (word: string): void => {
+    setSentenceCreationWord(word);
+  };
+
+  const closeSentenceInput = () => {
+    setSentenceCreationWord("");
+  };
+
+  const addSentence = (word: string, sentence: SentenceExampleType) => {
+    addSentenceToVocabItem(word, sentence);
+    const sentenceCount = vocabItems.get(word)?.sentences?.length || 0;
+    const updatedSentenceIndices = new Map(sentenceIndices);
+    updatedSentenceIndices.set(word, sentenceCount);
+    setSentenceIndices(updatedSentenceIndices);
+    setSentenceCreationWord("");
+  };
+
   return (
     <div className={`${BASE_CLASS}`}>
       <div className={`${BASE_CLASS}__prompt`}>
@@ -93,7 +121,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           <div className="border-right padding-5 flex">Translation</div>
           <div className="border-right padding-5 flex">Sentence</div>
           <div className="border-right padding-5 flex">Translated</div>
-          <div className="padding-5 flex fd-column jc-around">Change</div>
+          <div className="padding-5 flex fd-column jc-around">Change/Add</div>
         </div>
         {Array.from(vocabItems.entries()).map(([word, vocabItem], i) => (
           <WordsExportItem
@@ -101,6 +129,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             cycleSentence={cycleSentence}
             vocabItem={vocabItem}
             sentenceIndices={sentenceIndices}
+            openSentenceInput={openSentenceInput}
           />
         ))}
       </div>
@@ -109,6 +138,13 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           vocabItems={vocabItems}
           sentenceIndices={sentenceIndices}
           closeCardSettings={closeCardSettings}
+        />
+      )}
+      {isWritingSentence && (
+        <SentenceInput
+          word={sentenceCreationWord}
+          addSentence={addSentence}
+          closeSentenceInput={closeSentenceInput}
         />
       )}
       <a href="null" download="vocab.csv" ref={ref} style={{ display: "none" }}>

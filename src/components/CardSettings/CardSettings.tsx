@@ -11,7 +11,8 @@ import { VocabItemType } from "../../constants/translationTypes";
 
 import Button from "../Button";
 import { exportToAnkiDeck } from "../../utils/exportUtils";
-import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/utils";
+import { isNotNilOrEmpty } from "../../utils/utils";
+import { mockVocabItem } from "../../utils/mockData";
 
 import "./CardSettings.scss";
 
@@ -21,18 +22,6 @@ type PropsType = {
   vocabItems: Map<string, VocabItemType | null>;
   sentenceIndices: Map<string, number>;
   closeCardSettings: () => void;
-};
-
-const sampleVocabItem: VocabItemType = {
-  word: "友達",
-  reading: "ともだち",
-  definition: "friend, acuquaitance, buddy",
-  sentences: [
-    {
-      original: "彼は僕の友達です",
-      translations: ["This is my friend"],
-    },
-  ],
 };
 
 const CardSettings: React.SFC<PropsType> = ({
@@ -75,7 +64,7 @@ const CardSettings: React.SFC<PropsType> = ({
 
   const firstVocabItem = [...vocabItems.values()].filter(isNotNilOrEmpty)[0];
 
-  const previewVocabItem = firstVocabItem || sampleVocabItem;
+  const previewVocabItem = firstVocabItem || mockVocabItem;
   const sentenceIndex = isNotNilOrEmpty(firstVocabItem)
     ? (sentenceIndices.get(firstVocabItem?.word as string) as number)
     : 0;

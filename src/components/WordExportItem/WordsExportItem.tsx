@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSyncAlt, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/utils";
@@ -14,12 +14,14 @@ type PropsType = {
   vocabItem: VocabItemType | null;
   sentenceIndices: Map<string, number>;
   cycleSentence: (word: string) => void;
+  openSentenceInput: (word: string) => void;
 };
 
 const WordsExportItem: React.SFC<PropsType> = ({
   vocabItem,
   sentenceIndices,
   cycleSentence,
+  openSentenceInput,
 }): ReactElement => {
   const { word = "", sentences, reading, definition } = vocabItem || {};
   const sentence = sentences?.[sentenceIndices.get(word) as number];
@@ -45,9 +47,18 @@ const WordsExportItem: React.SFC<PropsType> = ({
           <div className="border-right padding-5 flex">{definition}</div>
           <div className="border-right padding-5 flex">{orignialSentence}</div>
           <div className="border-right padding-5 flex">{translation}</div>
-          <div className="padding-5 flex fd-column jc-around">
-            <Button onClick={() => cycleSentence(word)} size={ButtonSize.SMALL}>
+          <div className="padding-5 flex jc-around">
+            <Button
+              onClick={() => cycleSentence(word)}
+              size={ButtonSize.X_SMALL}
+            >
               <FontAwesomeIcon icon={faSyncAlt} size="1x" />
+            </Button>
+            <Button
+              onClick={() => openSentenceInput(word)}
+              size={ButtonSize.X_SMALL}
+            >
+              <FontAwesomeIcon icon={faPencilAlt} size="1x" />
             </Button>
           </div>
         </>
