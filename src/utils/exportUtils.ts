@@ -44,10 +44,10 @@ export const generateFlashcardContent = (
 
     switch (placement) {
       case CardPlacementType.FRONT:
-        frontContent = `${frontContent}<br />${string}`;
+        frontContent = `${frontContent}${string}<br />`;
         break;
       case CardPlacementType.BACK:
-        backContent = `${backContent}<br />${string}`;
+        backContent = `${backContent}${string}<br />`;
         break;
       default:
         break;
@@ -87,13 +87,24 @@ export const generateFlashcardContent = (
   };
 };
 
+const getDeckTagsFromstring = (deckTagsAsString: string): Array<string> =>
+  deckTagsAsString
+    .split(",")
+    .map((s) => s.trim())
+    .filter(isNotNilOrEmpty);
+
 export const exportToAnkiDeck = (
   vocabItems: Map<string, VocabItemType | null>,
   sentenceIndices: Map<string, number>,
   options: CardOptionsType,
-  onComplete: () => void
+  onComplete: () => void,
+  deckName: string,
+  deckTagsAsString: string
 ) => {
-  const deck = new AnkiExport("sentence-finder");
+  const deck = new AnkiExport(deckName);
+  const tags = getDeckTagsFromstring(deckTagsAsString);
+  console.log("tags", tags);
+
   [...vocabItems.values()].filter(isNotNilOrEmpty).forEach((vocabItem) => {
     const item = vocabItem as VocabItemType;
     const index = sentenceIndices.get(item.word) as number;
@@ -104,13 +115,13 @@ export const exportToAnkiDeck = (
       options
     );
 
-    deck.addCard(frontContent, backContent);
+    deck.addCard(frontContent, backContent, { tags });
   });
 
   deck
     .save()
     .then((zip: any) => {
-      saveAs(zip, "sentence-finder.apkg");
+      saveAs(zip, `${deckName}.apkg`);
       onComplete();
     })
     .catch((err: any) => console.log(err.stack || err));

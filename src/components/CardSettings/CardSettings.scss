@@ -47,4 +47,20 @@
     grid-row: 2 / 4;
     grid-column: 2 /2;
   }
+
+  &__deck-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__deck-tags {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__save-button {
+    grid-column: 1 / -1;
+  }
 }

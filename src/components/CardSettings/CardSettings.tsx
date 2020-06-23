@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState, ReactElement, ChangeEvent } from "react";
 
 import CardPreview from "../CardPreview/CardPreview";
 import CardOption from "../CardOption/CardOption";
@@ -39,6 +39,8 @@ const CardSettings: React.SFC<PropsType> = ({
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [deckName, setDeckName] = useState("Language Study");
+  const [deckTags, setDeckTags] = useState("");
 
   const updateOption = (
     cardProperty: CardPropertyType,
@@ -69,10 +71,25 @@ const CardSettings: React.SFC<PropsType> = ({
     ? (sentenceIndices.get(firstVocabItem?.word as string) as number)
     : 0;
 
+  const onChangeDeckName = (event: ChangeEvent<HTMLInputElement>) => {
+    setDeckName(event.target.value);
+  };
+
+  const onChangeDeckTags = (event: ChangeEvent<HTMLInputElement>) => {
+    setDeckTags(event.target.value);
+  };
+
   const exportAnki = () => {
     if (isSaving) return;
     setIsSaving(true);
-    exportToAnkiDeck(vocabItems, sentenceIndices, options, closeCardSettings);
+    exportToAnkiDeck(
+      vocabItems,
+      sentenceIndices,
+      options,
+      closeCardSettings,
+      deckName || "card-maker",
+      deckTags
+    );
   };
 
   return (
@@ -100,7 +117,17 @@ const CardSettings: React.SFC<PropsType> = ({
           options={options}
         />
       </div>
-      <Button onClick={exportAnki}>Save Anki Cards</Button>
+      <div className={`${BASE_CLASS}__deck-name`}>
+        <div className="mr-10">Deck Name</div>
+        <input value={deckName} onChange={onChangeDeckName} />
+      </div>
+      <div className={`${BASE_CLASS}__deck-tags`}>
+        <div className="mr-10">Tags (comma separated)</div>
+        <input value={deckTags} onChange={onChangeDeckTags} />
+      </div>
+      <div className={`${BASE_CLASS}__save-button pt-10`}>
+        <Button onClick={exportAnki}>Save Anki Cards</Button>
+      </div>
     </div>
   );
 };
