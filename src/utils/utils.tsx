@@ -128,20 +128,17 @@ export const renderWithLineBreaks = (
   const output: Array<ReactElement | string> = [];
   const elements = str.split(/<br \/>/g);
 
-  elements
-    .slice(1)
-    .filter(isNotNilOrEmpty)
-    .forEach((el, i) => {
-      const isLast = i === el.length - 1;
+  elements.filter(isNotNilOrEmpty).forEach((el, i) => {
+    const isLast = i === el.length - 1;
 
-      if (isNotNilOrEmpty(el)) {
-        output.push(el);
-      }
+    if (isNotNilOrEmpty(el)) {
+      output.push(el);
+    }
 
-      if (!isLast) {
-        output.push(<br key={el} />);
-      }
-    });
+    if (!isLast) {
+      output.push(<br key={el} />);
+    }
+  });
 
   return output;
 };

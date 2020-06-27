@@ -146,7 +146,7 @@ const Builder = () => {
     BuilderState.INPUTTING
   );
 
-  const addItems = (wordsss: Set<string>) => {
+  const addItems = (wordss: Set<string>) => {
     if (builderState === BuilderState.INPUTTING) {
       setBuilderState(BuilderState.PREPARING);
     }
@@ -210,6 +210,52 @@ const Builder = () => {
     setVocabMap(updatedVocabMap);
   };
 
+  const removeSentenceFromVocabItem = (word: string, sentenceIndex: number) => {
+    const exitingVocabItem = vocabMap.get(word) as VocabItemType;
+    const updatedSentences = [...exitingVocabItem.sentences];
+    updatedSentences[sentenceIndex] = { original: "", translations: [""] };
+
+    const updatedVocabItem: VocabItemType = {
+      ...exitingVocabItem,
+      sentences: updatedSentences,
+    };
+
+    const updatedVocabMap = new Map(vocabMap);
+    updatedVocabMap.set(word, updatedVocabItem);
+
+    setVocabMap(updatedVocabMap);
+  };
+
+  const deleteVocabItem = (word: string) => {
+    const updatedVocabMap = new Map(vocabMap);
+    updatedVocabMap.delete(word);
+
+    setVocabMap(updatedVocabMap);
+  };
+
+  const editWord = (
+    originalWord: string,
+    word: string,
+    reading: string = "",
+    definition: string = ""
+  ): void => {
+    const exitingVocabItem = vocabMap.get(word) as VocabItemType;
+    const updatedVocabItem = {
+      ...exitingVocabItem,
+      word,
+      reading,
+      definition,
+    };
+    const updatedVocabMap = new Map(vocabMap);
+
+    if (originalWord !== word) {
+      updatedVocabMap.delete(originalWord);
+    }
+    updatedVocabMap.set(word, updatedVocabItem);
+
+    setVocabMap(updatedVocabMap);
+  };
+
   const isFailed = builderState === BuilderState.FAILED;
 
   return (
@@ -265,6 +311,9 @@ const Builder = () => {
           sourceLang={targetLanguage}
           translationLang={nativeLanguage}
           addSentenceToVocabItem={addSentenceToVocabItem}
+          removeSentenceFromVocabItem={removeSentenceFromVocabItem}
+          deleteVocabItem={deleteVocabItem}
+          editWord={editWord}
         />
       </div>
       {/* )} */}

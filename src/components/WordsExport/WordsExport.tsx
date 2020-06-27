@@ -15,6 +15,8 @@ import { exportToCSV } from "../../utils/exportUtils";
 import CardSettings from "../CardSettings/CardSettings";
 import { isNotNilOrEmpty } from "../../utils/utils";
 import SentenceInput from "../SentenceInput/SentenceInput";
+import WordsExportHeader from "../WordsExportHeader/WordsExportHeader";
+import WordEdit from "../WordEdit/WordEdit";
 
 const BASE_CLASS = "words-export";
 
@@ -23,6 +25,9 @@ type WordExportPropsType = {
   sourceLang: LanguageCodes;
   translationLang: LanguageCodes;
   addSentenceToVocabItem: (word: string, sentence: SentenceExampleType) => void;
+  removeSentenceFromVocabItem: (word: string, sentenceIndex: number) => void;
+  deleteVocabItem: (word: string) => void;
+  editWord: (word: string, reading: string, definition: string) => void;
 };
 
 const WordsExport: React.SFC<WordExportPropsType> = ({
@@ -30,6 +35,9 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
   sourceLang,
   translationLang,
   addSentenceToVocabItem,
+  removeSentenceFromVocabItem,
+  deleteVocabItem,
+  editWord,
 }): ReactElement => {
   const [sentenceIndices, setSentenceIndices] = useState<Map<string, number>>(
     () => {
@@ -41,6 +49,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
   );
   const [isExportingAnki, setIsExportingAnki] = useState(false);
   const [sentenceCreationWord, setSentenceCreationWord] = useState("");
+  const [wordToEdit, setWordToEdit] = useState("");
 
   const isWritingSentence = isNotNilOrEmpty(sentenceCreationWord);
 
@@ -96,6 +105,12 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     setSentenceCreationWord("");
   };
 
+  const removeWordToEdit = () => setWordToEdit("");
+
+  const vocabItemToEdit = isNotNilOrEmpty(wordToEdit)
+    ? (vocabItems.get(wordToEdit) as VocabItemType)
+    : null;
+
   return (
     <div className={`${BASE_CLASS}`}>
       <div className={`${BASE_CLASS}__prompt`}>
@@ -114,15 +129,18 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
         </Button>
       </div>
       <div className={`${BASE_CLASS}__vocab-items`}>
-        <div className={`${BASE_CLASS}__vocab-items__item`}>
+        {/* <div className={`${BASE_CLASS}__vocab-items__item`}>
           <div className="border-right padding-5 flex">
             <b>Word</b>
           </div>
           <div className="border-right padding-5 flex">Translation</div>
           <div className="border-right padding-5 flex">Sentence</div>
           <div className="border-right padding-5 flex">Translated</div>
-          <div className="padding-5 flex fd-column jc-around">Change/Add</div>
-        </div>
+          <div className="padding-5 flex fd-column jc-around">
+            Edit Sentence
+          </div>
+        </div> */}
+        <WordsExportHeader />
         {Array.from(vocabItems.entries()).map(([word, vocabItem], i) => (
           <WordsExportItem
             key={i}
@@ -130,6 +148,9 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             vocabItem={vocabItem}
             sentenceIndices={sentenceIndices}
             openSentenceInput={openSentenceInput}
+            removeSentenceFromVocabItem={removeSentenceFromVocabItem}
+            deleteVocabItem={deleteVocabItem}
+            setWordToEdit={setWordToEdit}
           />
         ))}
       </div>
@@ -145,6 +166,13 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
           word={sentenceCreationWord}
           addSentence={addSentence}
           closeSentenceInput={closeSentenceInput}
+        />
+      )}
+      {isNotNilOrEmpty(vocabItemToEdit) && (
+        <WordEdit
+          removeWordToEdit={removeWordToEdit}
+          editWord={editWord}
+          vocabItem={vocabItemToEdit as VocabItemType}
         />
       )}
       <a href="null" download="vocab.csv" ref={ref} style={{ display: "none" }}>

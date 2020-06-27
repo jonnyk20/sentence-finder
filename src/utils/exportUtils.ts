@@ -40,7 +40,8 @@ export const generateFlashcardContent = (
     string: string,
     placement: CardPlacementType
   ) => {
-    if (isNilOrEmpty(String)) return;
+    console.log(`Adding "${string}" to ${placement}`);
+    if (isNilOrEmpty(string)) return;
 
     switch (placement) {
       case CardPlacementType.FRONT:

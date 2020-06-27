@@ -1,5 +1,9 @@
 import React, { ReactElement } from "react";
-import { faSyncAlt, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSyncAlt,
+  faPencilAlt,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { isNotNilOrEmpty, isNilOrEmpty } from "../../utils/utils";
@@ -15,6 +19,9 @@ type PropsType = {
   sentenceIndices: Map<string, number>;
   cycleSentence: (word: string) => void;
   openSentenceInput: (word: string) => void;
+  removeSentenceFromVocabItem: (word: string, senenceIndex: number) => void;
+  deleteVocabItem: (word: string) => void;
+  setWordToEdit: (word: string) => void;
 };
 
 const WordsExportItem: React.SFC<PropsType> = ({
@@ -22,48 +29,79 @@ const WordsExportItem: React.SFC<PropsType> = ({
   sentenceIndices,
   cycleSentence,
   openSentenceInput,
+  removeSentenceFromVocabItem,
+  deleteVocabItem,
+  setWordToEdit,
 }): ReactElement => {
   const { word = "", sentences, reading, definition } = vocabItem || {};
-  const sentence = sentences?.[sentenceIndices.get(word) as number];
+  const sentenceIndex = (sentenceIndices.get(word) as number) || 0;
+  const sentence = sentences?.[sentenceIndex];
 
   const orignialSentence = sentence?.original;
   const translation = sentence?.translations[0];
 
   return (
-    <div className={`${BASE_CLASS}`}>
-      <div className="border-right padding-5 flex">{`${word}${
-        isNotNilOrEmpty(reading) ? ` (${reading})` : ""
-      }`}</div>
-      {isNilOrEmpty(vocabItem) && (
+    <>
+      <div className={`${BASE_CLASS}`}>
         <div
-          className={`${BASE_CLASS}__loading-indicator border-right padding-5 flex grid-column-3`}
+          className={`${BASE_CLASS}__edit_button border-right flex jc-around`}
         >
-          Loading...
+          <Button onClick={() => setWordToEdit(word)} size={ButtonSize.X_SMALL}>
+            <FontAwesomeIcon icon={faPencilAlt} size="1x" />
+          </Button>
+          <Button
+            onClick={() => deleteVocabItem(word)}
+            size={ButtonSize.X_SMALL}
+          >
+            <FontAwesomeIcon icon={faTimes} size="1x" />
+          </Button>
         </div>
-      )}
-
-      {isNotNilOrEmpty(vocabItem) && (
-        <>
-          <div className="border-right padding-5 flex">{definition}</div>
-          <div className="border-right padding-5 flex">{orignialSentence}</div>
-          <div className="border-right padding-5 flex">{translation}</div>
-          <div className="padding-5 flex jc-around">
-            <Button
-              onClick={() => cycleSentence(word)}
-              size={ButtonSize.X_SMALL}
-            >
-              <FontAwesomeIcon icon={faSyncAlt} size="1x" />
-            </Button>
-            <Button
-              onClick={() => openSentenceInput(word)}
-              size={ButtonSize.X_SMALL}
-            >
-              <FontAwesomeIcon icon={faPencilAlt} size="1x" />
-            </Button>
+        <div className="border-right padding-5 flex">
+          {`${word}${isNotNilOrEmpty(reading) ? ` (${reading})` : ""}`}
+        </div>
+        {isNilOrEmpty(vocabItem) && (
+          <div
+            className={`${BASE_CLASS}__loading-indicator border-right padding-5 flex grid-column-3`}
+          >
+            Loading...
           </div>
-        </>
-      )}
-    </div>
+        )}
+
+        {isNotNilOrEmpty(vocabItem) && (
+          <>
+            <div className={`${BASE_CLASS}__cell border-right padding-5 flex`}>
+              {definition}
+            </div>
+            <div
+              className={`${BASE_CLASS}__edit_button border-right flex jc-around`}
+            >
+              <Button
+                onClick={() => cycleSentence(word)}
+                size={ButtonSize.X_SMALL}
+              >
+                <FontAwesomeIcon icon={faSyncAlt} size="1x" />
+              </Button>
+              <Button
+                onClick={() => openSentenceInput(word)}
+                size={ButtonSize.X_SMALL}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} size="1x" />
+              </Button>
+              <Button
+                onClick={() => removeSentenceFromVocabItem(word, sentenceIndex)}
+                size={ButtonSize.X_SMALL}
+              >
+                <FontAwesomeIcon icon={faTimes} size="1x" />
+              </Button>
+            </div>
+            <div className="border-right padding-5 flex">
+              {orignialSentence}
+            </div>
+            <div className="border-right padding-5 flex">{translation}</div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
