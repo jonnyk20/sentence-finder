@@ -48,8 +48,6 @@ const getExampleSentences = async ({
       );
       const json = await result.json();
       const vocabItem: VocabItemType = json.vocab_item;
-      console.log("json", json);
-      console.log("vocabItem", vocabItem);
       // const vocabItem = mockVocabItem;
       if (vocabItem) {
         onUpdate(vocabItem);
@@ -263,7 +261,6 @@ const Builder = () => {
   };
 
   const isFailed = builderState === BuilderState.FAILED;
-  console.log("REACT_APP_SENTENCES_URL", process.env);
 
   return (
     <div className="sentence-finder container">

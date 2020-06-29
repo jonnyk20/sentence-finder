@@ -1,15 +1,15 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from "react";
 
-import TextField from '@material-ui/core/TextField';
-import { Chip } from '@material-ui/core';
-import pink from '@material-ui/core/colors/pink';
-import { isNotNilOrEmpty } from '../../utils/utils';
-import { isEmpty, isNil } from 'ramda';
-import keycodes from '../../constants/keycodes';
+import TextField from "@material-ui/core/TextField";
+import { Chip } from "@material-ui/core";
+import pink from "@material-ui/core/colors/pink";
+import { isNotNilOrEmpty } from "../../utils/utils";
+import { isEmpty, isNil } from "ramda";
+import keycodes from "../../constants/keycodes";
 
-import './ChipsInput.scss';
+import "./ChipsInput.scss";
 
-const BASE_CLASS = 'chips-input';
+const BASE_CLASS = "chips-input";
 
 type ChipsRendererPropsType = {
   text: string;
@@ -48,7 +48,7 @@ type ChipInputPropsType = {
 
 const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
   const [focusedChip, setFocusedChip] = useState<number>(3);
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>("");
   const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
 
   const handleDeleteChip = (text: string, i: number) => {
@@ -72,7 +72,7 @@ const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
       setItems(newChipsSet);
     }
 
-    setInputValue('');
+    setInputValue("");
     setIsDeleteMode(false);
   };
 
@@ -90,7 +90,6 @@ const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
     }
 
     if (containsSeparator) {
-      console.log('contains', value);
       const newItems = value.trim().split(regex);
       const newChipsSet = new Set(items);
       newItems.forEach((item) => {
@@ -100,7 +99,7 @@ const ChipsInput: React.SFC<ChipInputPropsType> = ({ items, setItems }) => {
       });
 
       setItems(newChipsSet);
-      setInputValue('');
+      setInputValue("");
 
       return;
     }
