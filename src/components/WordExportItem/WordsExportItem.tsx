@@ -22,6 +22,7 @@ type PropsType = {
   removeSentenceFromVocabItem: (word: string, senenceIndex: number) => void;
   deleteVocabItem: (word: string) => void;
   setWordToEdit: (word: string) => void;
+  word: string;
 };
 
 const WordsExportItem: React.SFC<PropsType> = ({
@@ -32,8 +33,9 @@ const WordsExportItem: React.SFC<PropsType> = ({
   removeSentenceFromVocabItem,
   deleteVocabItem,
   setWordToEdit,
+  word,
 }): ReactElement => {
-  const { word = "", sentences, reading, definition } = vocabItem || {};
+  const { sentences, reading, definition } = vocabItem || {};
   const sentenceIndex = (sentenceIndices.get(word) as number) || 0;
   const sentence = sentences?.[sentenceIndex];
 

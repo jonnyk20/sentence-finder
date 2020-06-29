@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { isNotNilOrEmpty, convertToLingueeLanguageCode } from "../utils/utils";
+import {
+  isNotNilOrEmpty,
+  convertToLingueeLanguageCode,
+  isDev,
+} from "../utils/utils";
 import Button from "../components/Button";
 import { BuilderState } from "../constants/states";
 import {
@@ -27,8 +31,9 @@ type TranslationOptionsType = {
   onUpdate: (vi: VocabItemType) => void;
 };
 
-// const BASE_URL = 'https://sentence-finder-backend.herokuapp.com';
-const BASE_URL = "http://localhost:5000";
+const SENTENCES_URL = isDev()
+  ? "http://localhost:5000"
+  : "https://sentence-finder-backend.herokuapp.com";
 
 const getExampleSentences = async ({
   words,
@@ -38,14 +43,14 @@ const getExampleSentences = async ({
 }: TranslationOptionsType) => {
   words.forEach(async (word) => {
     try {
-      // const result = await fetch(
-      //   `${BASE_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
-      // );
-      // const json = await result.json();
-      // const vocabItem: VocabItemType = json.vocab_item;
-      // console.log("json", json);
-      // console.log("vocabItem", vocabItem);
-      const vocabItem = mockVocabItem;
+      const result = await fetch(
+        `${SENTENCES_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
+      );
+      const json = await result.json();
+      const vocabItem: VocabItemType = json.vocab_item;
+      console.log("json", json);
+      console.log("vocabItem", vocabItem);
+      // const vocabItem = mockVocabItem;
       if (vocabItem) {
         onUpdate(vocabItem);
       }
@@ -83,6 +88,7 @@ const getDefinitions = async (
         console.log("error translating:", error);
       }
     });
+    return;
   }
 
   words.forEach(async (word) => {
@@ -146,12 +152,12 @@ const Builder = () => {
     BuilderState.INPUTTING
   );
 
-  const addItems = (wordss: Set<string>) => {
+  const addItems = (words: Set<string>) => {
     if (builderState === BuilderState.INPUTTING) {
       setBuilderState(BuilderState.PREPARING);
     }
 
-    const words = ["友達"];
+    // const words = ["友達"];
 
     const wordsNotAddedYet = Array.from(words).filter((w) => !vocabMap.has(w));
 
@@ -176,7 +182,7 @@ const Builder = () => {
     const newVocabMap = new Map(vocabMap);
     wordsNotAddedYet.forEach((item) => newVocabMap.set(item, null));
     setVocabMap(newVocabMap);
-    // getDefinitions(options);
+    getDefinitions(options);
     getExampleSentences(options);
   };
 
@@ -257,6 +263,7 @@ const Builder = () => {
   };
 
   const isFailed = builderState === BuilderState.FAILED;
+  console.log("REACT_APP_SENTENCES_URL", process.env);
 
   return (
     <div className="sentence-finder container">

@@ -143,7 +143,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
         <WordsExportHeader />
         {Array.from(vocabItems.entries()).map(([word, vocabItem], i) => (
           <WordsExportItem
-            key={i}
+            key={word}
             cycleSentence={cycleSentence}
             vocabItem={vocabItem}
             sentenceIndices={sentenceIndices}
@@ -151,6 +151,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             removeSentenceFromVocabItem={removeSentenceFromVocabItem}
             deleteVocabItem={deleteVocabItem}
             setWordToEdit={setWordToEdit}
+            word={word}
           />
         ))}
       </div>

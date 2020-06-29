@@ -43,8 +43,6 @@ export const parseQueryString = (s: any): any =>
       return query;
     }, {});
 
-export const isDev = window.location.host.includes("localhost");
-
 export const getRandomIndex = (length: number) =>
   Math.floor(Math.random() * length);
 
@@ -142,3 +140,5 @@ export const renderWithLineBreaks = (
 
   return output;
 };
+
+export const isDev = (): boolean => process.env.NODE_ENV === "development";
