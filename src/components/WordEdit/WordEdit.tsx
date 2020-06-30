@@ -6,12 +6,7 @@ import { VocabItemType } from "../../constants/translationTypes";
 
 type PropsType = {
   removeWordToEdit: () => void;
-  editWord: (
-    originalSpelling: string,
-    spelling: string,
-    reading: string,
-    definition: string
-  ) => void;
+  editWord: (spelling: string, reading: string, definition: string) => void;
   vocabItem: VocabItemType;
 };
 
@@ -63,8 +58,7 @@ const WordEdit: React.SFC<PropsType> = ({
       <div>
         <Button
           onClick={() => {
-            editWord(orignalWord, word, reading, definition);
-            removeWordToEdit();
+            editWord(word, reading, definition);
           }}
         >
           Update

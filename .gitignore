@@ -6,10 +6,8 @@ node_modules
 .pnp.js
 
 # testing
-/code/coverage
+/coverage
 
-# production
-/code/build
 
 # misc
 .DS_Store
@@ -23,9 +21,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/code/app/build
-/code/dist
-/code/sandbox
+/app/build
+/dist
+/sandbox
 
 
 # Backend 
@@ -36,25 +34,25 @@ yarn-error.log*
 #   git config --global core.excludesfile '~/.gitignore_global'
 
 # Ignore bundler config.
-/code/backend/.bundle
+/.bundle
 
 # Ignore all logfiles and tempfiles.
-/code/backend/log/*
-/code/backend/tmp/*
-!/code/backend/log/.keep
-!/code/backend/tmp/.keep
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
 
 # Ignore uploaded files in development
-/code/backend/storage/*
+/storage/*
 
-/code/backend/node_modules
-/code/backend/yarn-error.log
+/node_modules
+/yarn-error.log
 
-/code/backend/public/assets
-/code/backend.byebug_history
+/public/assets
+/backend.byebug_history
 
 # Ignore master key for decrypting credentials and more.
-/code/backend/config/master.key
+/config/master.key
 
 data/*.csv
 
@@ -64,3 +62,5 @@ rails-backend/vendor/bundle
 sandbox/
 
 /.vscode
+dist/*
+build/*

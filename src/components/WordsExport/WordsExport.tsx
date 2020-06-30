@@ -17,6 +17,7 @@ import { isNotNilOrEmpty } from "../../utils/utils";
 import SentenceInput from "../SentenceInput/SentenceInput";
 import WordsExportHeader from "../WordsExportHeader/WordsExportHeader";
 import WordEdit from "../WordEdit/WordEdit";
+import { track } from "../../utils/tracker";
 
 const BASE_CLASS = "words-export";
 
@@ -27,7 +28,12 @@ type WordExportPropsType = {
   addSentenceToVocabItem: (word: string, sentence: SentenceExampleType) => void;
   removeSentenceFromVocabItem: (word: string, sentenceIndex: number) => void;
   deleteVocabItem: (word: string) => void;
-  editWord: (word: string, reading: string, definition: string) => void;
+  editWord: (
+    originalWord: string,
+    word: string,
+    reading: string,
+    definition: string
+  ) => void;
 };
 
 const WordsExport: React.SFC<WordExportPropsType> = ({
@@ -68,11 +74,19 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
 
   const ref = useRef<HTMLAnchorElement>(null);
 
-  const openCardSettings = () => setIsExportingAnki(true);
-  const closeCardSettings = () => setIsExportingAnki(false);
+  const openCardSettings = () => {
+    setIsExportingAnki(true);
+    track("card settings opened");
+  };
+
+  const closeCardSettings = () => {
+    setIsExportingAnki(false);
+    track("card settings closed");
+  };
 
   const saveCSV = () => {
     exportToCSV(vocabItems, sentenceIndices, ref);
+    track("csv saved");
   };
 
   const cycleSentence = (word: string) => {
@@ -86,14 +100,17 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     updatedSentenceIndices.set(word, nextIndex);
 
     setSentenceIndices(updatedSentenceIndices);
+    track("sentence cycled", { word, nextIndex });
   };
 
   const openSentenceInput = (word: string): void => {
     setSentenceCreationWord(word);
+    track("sentence editor opened");
   };
 
   const closeSentenceInput = () => {
     setSentenceCreationWord("");
+    track("sentence editor closed");
   };
 
   const addSentence = (word: string, sentence: SentenceExampleType) => {
@@ -105,11 +122,36 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     setSentenceCreationWord("");
   };
 
-  const removeWordToEdit = () => setWordToEdit("");
-
   const vocabItemToEdit = isNotNilOrEmpty(wordToEdit)
     ? (vocabItems.get(wordToEdit) as VocabItemType)
     : null;
+
+  const removeWordToEdit = () => {
+    setWordToEdit("");
+    track("word editor closed");
+  };
+
+  const onSetWordToEdit = (word: string): void => {
+    setWordToEdit(word);
+    track("word editor opened", { word });
+  };
+
+  const onEditWord = (
+    word: string,
+    reading: string,
+    definition: string
+  ): void => {
+    editWord(wordToEdit, word, reading, definition);
+    track("word updated", {
+      prevWord: wordToEdit,
+      updatedWord: word,
+      prevReading: vocabItemToEdit?.reading,
+      updatedReading: reading,
+      prevDefinition: vocabItemToEdit?.definition,
+      updateDefinition: definition,
+    });
+    setWordToEdit("");
+  };
 
   return (
     <div className={`${BASE_CLASS}`}>
@@ -150,7 +192,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
             openSentenceInput={openSentenceInput}
             removeSentenceFromVocabItem={removeSentenceFromVocabItem}
             deleteVocabItem={deleteVocabItem}
-            setWordToEdit={setWordToEdit}
+            setWordToEdit={onSetWordToEdit}
             word={word}
           />
         ))}
@@ -172,7 +214,7 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
       {isNotNilOrEmpty(vocabItemToEdit) && (
         <WordEdit
           removeWordToEdit={removeWordToEdit}
-          editWord={editWord}
+          editWord={onEditWord}
           vocabItem={vocabItemToEdit as VocabItemType}
         />
       )}

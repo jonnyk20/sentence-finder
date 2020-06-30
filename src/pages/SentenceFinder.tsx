@@ -23,6 +23,7 @@ import {
 import { mockVocabItem } from "../utils/mockData";
 
 import "./SentenceFinder.scss";
+import { track } from "../utils/tracker";
 
 type TranslationOptionsType = {
   words: string[];
@@ -30,10 +31,6 @@ type TranslationOptionsType = {
   languageTo: LanguageCodes;
   onUpdate: (vi: VocabItemType) => void;
 };
-
-const SENTENCES_URL = isDev()
-  ? "http://localhost:5000"
-  : "https://sentence-finder-backend.herokuapp.com";
 
 const getExampleSentences = async ({
   words,
@@ -44,7 +41,7 @@ const getExampleSentences = async ({
   words.forEach(async (word) => {
     try {
       const result = await fetch(
-        `${SENTENCES_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
+        `${process.env.REACT_APP_SENTENCES_URL}/search?word=${word}&language_from=${languageFrom}&language_to=${languageTo}`
       );
       const json = await result.json();
       const vocabItem: VocabItemType = json.vocab_item;
@@ -157,7 +154,15 @@ const Builder = () => {
 
     // const words = ["友達"];
 
-    const wordsNotAddedYet = Array.from(words).filter((w) => !vocabMap.has(w));
+    const wordsNotAddedYet = Array.from(words)
+      .filter((w) => !vocabMap.has(w))
+      .slice(0, 8);
+
+    track("word added", {
+      words: wordsNotAddedYet,
+      languageFrom: targetLanguage,
+      languageTo: nativeLanguage,
+    });
 
     const options: TranslationOptionsType = {
       words: wordsNotAddedYet,
@@ -192,11 +197,13 @@ const Builder = () => {
   const onChangeNativeLanguage = (value: string) => {
     const languageCode = value as LanguageCodes;
     setNativeLanguage(languageCode);
+    track("native language set", { lang: value });
   };
 
   const onChangeTargetLanguage = (value: string) => {
     const languageCode = value as LanguageCodes;
     setTargetLanguage(languageCode);
+    track("target language set", { lang: value });
   };
 
   const addSentenceToVocabItem = (
@@ -212,6 +219,11 @@ const Builder = () => {
     updatedVocabMap.set(word, updatedVocabItem);
 
     setVocabMap(updatedVocabMap);
+    track("sentence added", {
+      word,
+      sentence: sentence.original,
+      translation: sentence.translations[0],
+    });
   };
 
   const removeSentenceFromVocabItem = (word: string, sentenceIndex: number) => {
@@ -228,6 +240,7 @@ const Builder = () => {
     updatedVocabMap.set(word, updatedVocabItem);
 
     setVocabMap(updatedVocabMap);
+    track("sentence deleted", { word });
   };
 
   const deleteVocabItem = (word: string) => {
@@ -235,6 +248,7 @@ const Builder = () => {
     updatedVocabMap.delete(word);
 
     setVocabMap(updatedVocabMap);
+    track("vocab item removed", { word });
   };
 
   const editWord = (

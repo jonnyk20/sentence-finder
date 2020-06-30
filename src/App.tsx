@@ -1,13 +1,13 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import ReactGA from 'react-ga';
-import SentenceFinder from './pages/SentenceFinder';
-import ErrorBoundary from './components/ErrorBoundary';
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-ReactGA.initialize('UA-33174971-5');
-ReactGA.pageview(window.location.pathname + window.location.search);
+import SentenceFinder from "./pages/SentenceFinder";
+import ErrorBoundary from "./components/ErrorBoundary";
+import { track } from "./utils/tracker";
 
-export const TEST_ID = 'app';
+export const TEST_ID = "app";
+
+track("Page Viewed");
 
 const App = () => (
   <Router>
@@ -16,7 +16,7 @@ const App = () => (
         <div className="appp__bg-overlay"></div>
         <Switch>
           <Route path="/">
-          <SentenceFinder />
+            <SentenceFinder />
           </Route>
         </Switch>
       </ErrorBoundary>

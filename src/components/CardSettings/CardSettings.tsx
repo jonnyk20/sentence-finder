@@ -15,6 +15,7 @@ import { isNotNilOrEmpty } from "../../utils/utils";
 import { mockVocabItem } from "../../utils/mockData";
 
 import "./CardSettings.scss";
+import { track } from "../../utils/tracker";
 
 const BASE_CLASS = "card-settings";
 
@@ -46,6 +47,7 @@ const CardSettings: React.SFC<PropsType> = ({
     cardProperty: CardPropertyType,
     placement: CardPlacementType
   ) => {
+    track("card, settings changed", { cardProperty, placement });
     setOptions({
       ...options,
       [cardProperty]: placement,
@@ -90,6 +92,11 @@ const CardSettings: React.SFC<PropsType> = ({
       deckName || "card-maker",
       deckTags
     );
+    track("anki deck saved", {
+      deckName: deckName || "card-maker",
+      deckTags,
+      deckSize: vocabItems.size,
+    });
   };
 
   return (
