@@ -65,7 +65,6 @@ const CardSettings: React.SFC<PropsType> = ({
   );
 
   const firstVocabItem = [...vocabItems.values()].filter(isNotNilOrEmpty)[0];
-  console.log("firstVocabItem", firstVocabItem);
 
   const previewVocabItem = firstVocabItem || mockVocabItem;
   const sentenceIndex = isNotNilOrEmpty(firstVocabItem)

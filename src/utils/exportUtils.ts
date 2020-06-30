@@ -40,7 +40,6 @@ export const generateFlashcardContent = (
     string: string,
     placement: CardPlacementType
   ) => {
-    console.log(`Adding "${string}" to ${placement}`);
     if (isNilOrEmpty(string)) return;
 
     switch (placement) {
