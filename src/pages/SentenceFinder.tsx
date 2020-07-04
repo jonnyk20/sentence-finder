@@ -59,7 +59,10 @@ const getDefinitions = async (
 ): Promise<void> => {
   const { words, languageFrom, languageTo, onUpdate } = options;
 
-  if (options.languageFrom === LanguageCodes.JA) {
+  if (
+    options.languageFrom === LanguageCodes.JA &&
+    options.languageTo === LanguageCodes.EN
+  ) {
     words.forEach(async (word) => {
       try {
         const res = await fetch(
