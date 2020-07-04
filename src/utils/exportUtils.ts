@@ -132,24 +132,22 @@ export const exportToCSV = (
   sentenceIndices: Map<string, number>,
   ref: React.RefObject<HTMLAnchorElement>
 ) => {
-  const data = [...vocabItems.keys()]
-    .filter((word) => isNotNilOrEmpty(vocabItems.get(word)))
-    .map((word) => {
-      const vocabItem = vocabItems.get(word);
+  const data = [...vocabItems.entries()]
+    .filter(([, vocabItem]) => isNotNilOrEmpty(vocabItem))
+    .map(([word, vocabItem]) => {
       const sentenceObject = isNotNilOrEmpty(vocabItem?.sentences)
         ? vocabItem?.sentences![sentenceIndices.get(word) as number]
         : null;
-      // const sentence = replaceWordWithText(
-      //   word,
-      //   sentenceObject?.original!
-      // );
-      const sentenceTranslation = sentenceObject?.translations[0];
-      // # Todo, add dictionary definition
+
       const originalSentence = sentenceObject?.original || "";
+      const sentenceTranslation = sentenceObject?.translations[0] || "";
+      const definition = vocabItem?.definition || "";
+      const reading = vocabItem?.reading || "";
 
       return {
         word,
-        // definition,
+        reading,
+        definition,
         originalSentence,
         sentenceTranslation,
       };
