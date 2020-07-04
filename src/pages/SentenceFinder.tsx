@@ -156,10 +156,11 @@ const Builder = () => {
     }
 
     // const words = ["友達"];
+    const numberOfWordsThatCanBeAdded = Math.max(10 - vocabMap.size, 0);
 
     const wordsNotAddedYet = Array.from(words)
       .filter((w) => !vocabMap.has(w))
-      .slice(0, 8);
+      .slice(0, numberOfWordsThatCanBeAdded);
 
     track("word added", {
       words: wordsNotAddedYet,
@@ -317,7 +318,7 @@ const Builder = () => {
           </div>
           <div className="sentence-finder__form__submission mv-20">
             <div className="mr-10 text-center">
-              {`Enter the ${languageOptions[targetLanguage]} words you want to study below`}
+              {`Enter the ${languageOptions[targetLanguage]} words you want to study below (up to 10)`}
             </div>
           </div>
           <div className="sentence-finder__form__input">
