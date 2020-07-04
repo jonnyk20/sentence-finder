@@ -279,12 +279,13 @@ const Builder = () => {
   return (
     <div className="sentence-finder container">
       <div>
-        <h2>Sentence Finder 🌍</h2>
+        <h2>Flashcard Generator 🌍</h2>
       </div>
       {/* {isInputting && ( */}
       <>
         <div className="mb-10 text-light-color text-light">
-          Automatic sentence cards for language learners
+          Automatically find translations and example sentences for the words
+          you're learning. Then, export it all as a csv or Anki Deck.
         </div>
         {/* <div className="mv-5 text-small">1. Choose your language</div>
           <div className="mv-5 text-small">1. Choose your words</div>
@@ -312,8 +313,8 @@ const Builder = () => {
             />
           </div>
           <div className="sentence-finder__form__submission mv-20">
-            <div className="mr-10">
-              {`Enter ${languageOptions[targetLanguage]} words below and then click 'Find Sentences'`}
+            <div className="mr-10 text-center">
+              {`Enter the ${languageOptions[targetLanguage]} words you want to study below`}
             </div>
           </div>
           <div className="sentence-finder__form__input">

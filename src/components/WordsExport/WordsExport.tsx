@@ -157,9 +157,11 @@ const WordsExport: React.SFC<WordExportPropsType> = ({
     <div className={`${BASE_CLASS}`}>
       <div className={`${BASE_CLASS}__prompt`}>
         <div>
-          <div className="text-bold">Pick sentences and save them</div>
+          <div className="text-bold">
+            Edit the words, definition or sentences
+          </div>
           <div>
-            Click <FontAwesomeIcon icon={faSyncAlt} size="1x" /> to change
+            Click <FontAwesomeIcon icon={faSyncAlt} size="1x" /> to switch
             sentences
           </div>
         </div>
