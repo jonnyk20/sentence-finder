@@ -282,21 +282,16 @@ const Builder = () => {
 
   return (
     <div className="sentence-finder container">
+      <div>Questions/Feedback?</div>
       <div>
         <h2>Flashcard Generator 🌍</h2>
       </div>
-      {/* {isInputting && ( */}
       <>
         <div className="mb-10 text-light-color text-light">
-          Automatically find translations and example sentences for the words
-          you're learning. Then, export it all as a csv or Anki Deck.
+          Automatically find translations for the words you're learning. Then,
+          export it all as a csv or Anki Deck. (Note, the sentence finding
+          feature is currently under maintenance. Check back in a week!)
         </div>
-        {/* <div className="mv-5 text-small">1. Choose your language</div>
-          <div className="mv-5 text-small">1. Choose your words</div>
-          <div className="mt-5 mb-20 text-small">
-            3. Click 'Find Sentences' and we'll find translations and sentences
-            for you
-          </div> */}
 
         <div className="sentence-finder__form">
           <div className="sentence-finder__form__language-selection">
@@ -326,8 +321,6 @@ const Builder = () => {
           </div>
         </div>
       </>
-      {/* )} */}
-      {/* {isPreparing && ( */}
       <div>
         <WordsExport
           vocabItems={vocabMap}
@@ -352,25 +345,3 @@ const Builder = () => {
 };
 
 export default Builder;
-
-// tatoeba.org/api/search?word=amigo&language_from=es&language_to=en
-
-//  {
-//   word: 'amigo',
-//   sentences: [
-//     {
-//       original: 'Hello friend',
-//       translations: [
-//         'Hola amigo',
-//         'Buenos dias amigo'
-//       ]
-//     },
-//     {
-//       original: 'This is not my friend',
-//       translations: [
-//         'No es mi amigo',
-//         'El no es mi amgo'
-//       ]
-//     }
-//   ]
-// }
