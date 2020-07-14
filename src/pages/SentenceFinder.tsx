@@ -282,15 +282,17 @@ const Builder = () => {
 
   return (
     <div className="sentence-finder container">
-      <div>Questions/Feedback?</div>
       <div>
         <h2>Flashcard Generator 🌍</h2>
       </div>
       <>
         <div className="mb-10 text-light-color text-light">
           Automatically find translations for the words you're learning. Then,
-          export it all as a csv or Anki Deck. (Note, the sentence finding
-          feature is currently under maintenance. Check back in a week!)
+          export it all as a csv or Anki Deck. This project is a work in
+          progress and{" "}
+          <a href="mailto:jonnyk_78@hotmail.com?subject=Flashcard%20Maker">
+            feedback is welcome!
+          </a>
         </div>
 
         <div className="sentence-finder__form">
